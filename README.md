@@ -13,10 +13,8 @@ You can do followings:
 
 browser image
 
-<a href="https://raw.githubusercontent.com/wiki/kodamap/tellooo/images/tellooo_s.png">
-<img src="https://raw.githubusercontent.com/wiki/kodamap/tellooo/images/tellooo_s.png" alt="start" style="width:auto;height:auto;" ></a>
-
-
+<a href="https://raw.githubusercontent.com/wiki/kodamap/tellooo/images/tellooo_p.png">
+<img src="https://raw.githubusercontent.com/wiki/kodamap/tellooo/images/tellooo_p.png" alt="pooh" style="width:auto;height:auto;" ></a>
 
 ## Reference
 
@@ -135,8 +133,8 @@ http://127.0.0.1:5000/
 ```
 5. connet to Tello (click the connect button)
 
-<a href="https://raw.githubusercontent.com/wiki/kodamap/tellooo/images/tellooo_p.png">
-<img src="https://raw.githubusercontent.com/wiki/kodamap/tellooo/images/tellooo_p.png" alt="pooh" style="width:auto;height:auto;" ></a>
+<a href="https://raw.githubusercontent.com/wiki/kodamap/tellooo/images/tellooo_s.png">
+<img src="https://raw.githubusercontent.com/wiki/kodamap/tellooo/images/tellooo_s.png" alt="start" style="width:auto;height:auto;" ></a>
 
 Note: 
 * if you can not connect Tello (no response:ok ) , make sure to be connected Tello's network and try to restart app (Stop(Ctl + C) , then run app again).
