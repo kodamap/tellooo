@@ -13,9 +13,8 @@ You can do followings:
 
 browser image
 
-
-<a href="https://raw.githubusercontent.com/wiki/kodamap/tracking_Tello/images/Tellooo_Pooh.jpg">
-<img src="https://raw.githubusercontent.com/wiki/kodamap/tracking_Tello/images/Tellooo_Pooh.jpg" alt="kibana dashboard" style="width:auto;height:auto;" ></a>
+<a href="https://raw.githubusercontent.com/wiki/kodamap/tellooo/images/tellooo_s.png">
+<img src="https://raw.githubusercontent.com/wiki/kodamap/tellooo/images/tellooo_s.png" alt="start" style="width:auto;height:auto;" ></a>
 
 
 
@@ -136,6 +135,9 @@ http://127.0.0.1:5000/
 ```
 5. connet to Tello (click the connect button)
 
+<a href="https://raw.githubusercontent.com/wiki/kodamap/tellooo/images/tellooo_p.png">
+<img src="https://raw.githubusercontent.com/wiki/kodamap/tellooo/images/tellooo_p.png" alt="pooh" style="width:auto;height:auto;" ></a>
+
 Note: 
 * if you can not connect Tello (no response:ok ) , make sure to be connected Tello's network and try to restart app (Stop(Ctl + C) , then run app again).
 * "test mode" means that 'object tracking' is enabled but **Tello moving ('sending command to Tello') is disabled**.
@@ -172,8 +174,8 @@ $ ffmpeg -f dshow -i video="Integrated Camera" -preset ultrafast -vcodec libx264
 
 ### Store bootstrap and jQuery on your pc
 
-You need to store bootstrap and jQuery on your pc (see static/js , static/css)
-because you have not internet connection while connectiong to Tello's wifi network.
+You need to bootstrap and jQuery on your pc (see static/js , static/css)
+because you have internet connection while connectiong to Tello (Tello private network 192.168.10.0/24).
 
 Tested with these version:
 * jquery-3.3.1
