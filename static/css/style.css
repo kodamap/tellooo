@@ -6,9 +6,23 @@
   background-color: rgb(231, 247, 6);
 }
 
-body{margin: 5px;}
-button{margin: 10px;}
-.btn{margin: 5px;}
+.btn-group{
+  margin: 2px;
+}
+
+input{
+  text-align: center; 
+  max-width: 60px;
+  margin: 10px;
+}
+
+.button {
+  padding:5px; cursor:pointer; background:grey; color:white; width:25px; height:auto; text-align:center; display:inline-block;
+ }
+ 
+ .button:hover {
+ background:black;
+ }
 
 .btn-circle {
   width: 30px;

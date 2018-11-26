@@ -6,6 +6,7 @@ To test video streaming , use ffmpeg.
 """
 
 import socket
+import re
 from time import sleep
 
 battery = 100
@@ -30,6 +31,8 @@ with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
         elif data == 'temp?':
             temp = temp + 1
             msg = temp
+        elif re.search(r'speed \d+', data):
+            msg = re.search(r'speed \d+', data).group(0).split(" ")[1]
         else:
             msg = "ok"
         msg = str(msg).encode(encoding="utf-8")

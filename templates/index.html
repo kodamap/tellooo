@@ -23,16 +23,20 @@
         </div>
         <div class="row">
             <div class="col-lg-12">
-                <div class="btn-group btn-group-toggle" data-toggle="buttons">
-                    {% if connected %}
-                    <label id="command" class="btn btn-success">
-                        <input type="radio" value="command" autocomplete="off">connect</label>
-                    {% else %}
-                    <label id="command" class="btn btn-danger">
-                        <input type="radio" value="command" autocomplete="off">connect</label>
-                    {% endif %}
-                </div>
+                {% if connected %}
+                <button type="button" class="btn btn-success" data-toggle="button" aria-pressed="false" autocomplete="off"
+                    id="command" value="command">connect</button>
+                {% else %}
+                <button type="button" class="btn btn-danger" data-toggle="button" aria-pressed="false" autocomplete="off"
+                    id="command" value="command">connect</button>
+                {% endif %}
+                <i class="fas fa-tachometer-alt fa-2x"></i> <span class="plus button rounded"><i class="fas fa-plus"></i></span>
+                <input type="text" name="qty" id="qty" malgength="6" />
+                <span class="min button rounded"><i class="fas fa-minus"></i></span> (min:20 max:100)
+                </span>
             </div>
+        </div>
+        <div class="row">
             <div class="col-lg-12">
                 <div class="btn-group btn-group-toggle" data-toggle="buttons">
                     {% if streamon %}
@@ -58,29 +62,38 @@
         <div class="row">
             <div class="col-lg-12">
                 <div class="btn-group btn-group-toggle" data-toggle="buttons">
-                    <label class="btn btn-dark">
-                        <input type="radio" value="streamonly" autocomplete="off">stream
-                        only</label>
-                    <label class="btn btn-dark">
+                    <label id="streamonly" class="btn btn-dark">
+                        <input type="radio" value="streamonly" autocomplete="off">streamonly</label>
+                    <label id="test" class="btn btn-dark">
                         <input type="radio" value="test" autocomplete="off">test</label>
-                    <label class="btn btn-dark">
+                    <label id="tracking" class="btn btn-dark">
                         <input type="radio" value="tracking" autocomplete="off">tracking</label>
                 </div>
             </div>
         </div>
         <div class="row">
             <div class="col-lg-4">
-                <div class="btn-group btn-group-toggle" data-toggle="buttons">
-                    <label class="btn btn-primary btn-circle btn-lg">
-                        <input type="radio" value="up" autocomplete="off">UP</label>
-                    <label class="btn btn-primary btn-circle btn-lg">
-                        <input type="radio" value="down" autocomplete="off">DW</label>
+                <div class="row justify-content-center">
+                    <div class="col-3">
+                        <button type="button" class="btn btn-primary btn-circle btn-lg" data-toggle="button"
+                            aria-pressed="false" autocomplete="off" id="up" value="up"><i class="fas fa-angle-double-up"></i></button>
+                    </div>
                 </div>
-                <div class="btn-group btn-group-toggle" data-toggle="buttons">
-                    <label class="btn btn-primary btn-circle btn-lg">
-                        <input type="radio" value="cw" autocomplete="off">CW</label>
-                    <label class="btn btn-primary btn-circle btn-lg">
-                        <input type="radio" value="ccw" autocomplete="off">CCW</label>
+                <div class="row justify-content-around">
+                    <div class="col-3">
+                        <button type="button" class="btn btn-primary btn-circle btn-lg" data-toggle="button"
+                            aria-pressed="false" autocomplete="off" id="cw" value="cw"><i class="fas fa-redo"></i></button>
+                    </div>
+                    <div class="col-3">
+                        <button type="button" class="btn btn-primary btn-circle btn-lg" data-toggle="button"
+                            aria-pressed="false" autocomplete="off" id="ccw" value="ccw"><i class="fas fa-undo"></i></button>
+                    </div>
+                </div>
+                <div class="row justify-content-center">
+                    <div class="col-3">
+                        <button type="button" class="btn btn-primary btn-circle btn-lg" data-toggle="button"
+                            aria-pressed="false" autocomplete="off" id="down" value="down"><i class="fas fa-angle-double-down"></i></button>
+                    </div>
                 </div>
             </div>
             <div class="col-lg-4">
@@ -93,34 +106,43 @@
                 {% endif %}
             </div>
             <div class="col-lg-4">
-                <div class="btn-group btn-group-toggle" data-toggle="buttons">
-                    <label class="btn btn-primary btn-circle btn-lg">
-                        <input type="radio" value="forward" autocomplete="off">FW</label>
-                    <label class="btn btn-primary btn-circle btn-lg">
-                        <input type="radio" value="back" autocomplete="off">BK</label>
+                <div class="row justify-content-center">
+                    <div class="col-3">
+                        <button type="button" class="btn btn-primary btn-circle btn-lg" data-toggle="button"
+                            aria-pressed="false" autocomplete="off" id="forward" value="forward"><i class="fas fa-forward"></i></button>
+                    </div>
                 </div>
-                <div class="btn-group btn-group-toggle" data-toggle="buttons">
-                    <label class="btn btn-primary btn-circle btn-lg">
-                        <input type="radio" value="left" autocomplete="off">L</label>
-                    <label class="btn btn-primary btn-circle btn-lg">
-                        <input type="radio" value="right" autocomplete=" off">R</label>
+                <div class="row justify-content-around">
+                    <div class="col-3">
+                        <button type="button" class="btn btn-primary btn-circle btn-lg" data-toggle="button"
+                            aria-pressed="false" autocomplete="off" id="right" value="right"><i class="fas fa-arrow-left"></i></button>
+                    </div>
+                    <div class="col-3">
+                        <button type="button" class="btn btn-primary btn-circle btn-lg" data-toggle="button"
+                            aria-pressed="false" autocomplete="off" id="left" value="left"><i class="fas fa-arrow-right"></i></button>
+                    </div>
+                </div>
+                <div class="row justify-content-center">
+                    <div class="col-3">
+                        <button type="button" class="btn btn-primary btn-circle btn-lg" data-toggle="button"
+                            aria-pressed="false" autocomplete="off" id="back" value="back"><i class="fas fa-backward"></i></button>
+                    </div>
                 </div>
             </div>
         </div>
         <div class="row">
             <div class="col-lg-12">
-                <div class="btn-group btn-group-toggle" data-toggle="buttons">
-                    <label id="battery" class="btn btn-info">
-                        <input type="radio" value="battery?" autocomplete="off">battery?</label>
-                    <label id="speed" class="btn btn-info">
-                        <input type="radio" value="speed?" autocomplete="off">speed?</label>
-                    <label id="temp" class="btn btn-info">
-                        <input type="radio" value="temp?" autocomplete="off">temp?</label>
-                </div>
+                <button type="button" class="btn btn-info" data-toggle="button" aria-pressed="false" autocomplete="off"
+                    id="battery" value="battery?">battery?</button>
+                <button type="button" class="btn btn-info" data-toggle="button" aria-pressed="false" autocomplete="off"
+                    id="speed" value="speed?">speed?</button>
+                <button type="button" class="btn btn-info" data-toggle="button" aria-pressed="false" autocomplete="off"
+                    id="temp" value="temp?">temp?</button>
             </div>
         </div>
     </div>
     <script src="../static/js/jquery-3.3.1.min.js"></script>
     <script src="../static/js/bootstrap.min.js"></script>
     <script src="../static/js/tello.js"></script>
+    <script src="../static/js/all.min.js"></script>
 </body>

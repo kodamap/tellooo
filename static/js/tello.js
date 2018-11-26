@@ -21,8 +21,30 @@ $(function () {
             info_flg++;
         }, 5000);
     });
+    $(function () {
+        var n = 100;
+        var speed_range = 20;
+        $('#qty').val(n);
+        $('.plus').on('click', function () {
+            if (n < 100) {
+                $('#qty').val(n = n + speed_range);
+                command = JSON.stringify({ "command": "speed " + n });
+                post('/tellooo', command);
+            }
+        });
+        $('.min').on('click', function () {
+            if (n > 20) {
+                $('#qty').val(n = n - speed_range);
+                command = JSON.stringify({ "command": "speed " + n });
+                post('/tellooo', command);
+            }
+        });
+    });
     $('.btn').on('click', function () {
-        var command = JSON.stringify({ "command": $(this).find('input').val() });
+        var command = JSON.stringify({ "command": $('#' + $(this).attr('id')).val() });
+        if (JSON.parse(command).command == "") {
+            var command = JSON.stringify({ "command": $(this).find('input').val() });
+        }
         if (info_cmd.includes(JSON.parse(command).command)) {
             url = '/info';
         } else if (connect_cmd.includes(JSON.parse(command).command)) {
@@ -48,7 +70,6 @@ $(function () {
             var tello_res = JSON.parse(data.ResultSet).result;
             var connected = JSON.parse(data.ResultSet).connected;
             var streamon = JSON.parse(data.ResultSet).streamon;
-            console.log(JSON.parse(data.ResultSet))
             if (connected) {
                 if (connect_cmd.includes(sent_cmd)) {
                     $("#res").text(sent_cmd + ":" + tello_res);
@@ -61,7 +82,8 @@ $(function () {
                 if (sent_cmd == "battery?") {
                     $("#battery").text(sent_cmd + ":" + tello_res);
                 }
-                if (sent_cmd == "speed?") {
+                if (sent_cmd == "speed?" || sent_cmd.match(/speed \d+/)) {
+                    sent_cmd = sent_cmd.split(" ", 1)
                     $("#speed").text(sent_cmd + ":" + tello_res);
                 }
                 if (sent_cmd == "temp?") {

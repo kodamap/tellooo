@@ -13,8 +13,8 @@ You can do followings:
 
 browser image
 
-<a href="https://raw.githubusercontent.com/wiki/kodamap/tellooo/images/tellooo_p.png">
-<img src="https://raw.githubusercontent.com/wiki/kodamap/tellooo/images/tellooo_p.png" alt="pooh" style="width:auto;height:auto;" ></a>
+<a href="https://raw.githubusercontent.com/wiki/kodamap/tellooo/images/tellooo_s.jpg">
+<img src="https://raw.githubusercontent.com/wiki/kodamap/tellooo/images/tellooo_s.jpg" alt="start" style="width:auto;height:auto;" ></a>
 
 ## Reference
 
@@ -92,9 +92,7 @@ frame_prop = (320, 240, 16)
 
 ```sh
 [Tello]
-# Tello address and port is not needed to change. 
-# You can change this when you test udp socket on your pc. (see test\server.py)
-# Tello_addr = ('127.0.0.1', 50007)
+# Tello address and port is not needed to change.
 Tello_addr = ('192.168.10.1', 8889)
 # define move cm by operation (MIN, MAX, Tello sdk MAX)
 right = (20, 30, 500)
@@ -105,10 +103,6 @@ left = (20, 30, 500)
 
 * tracking setting
 
-Note:
-* **Verify the motion limit range of Tello for your safety.**
-'position_limit' (used with tracking mode) is not the actual position of Tello but the position calcurated by this applicaiton per sending command to Tello. 
-
 ```sh
 [tracking]
 .
@@ -117,6 +111,11 @@ Note:
 #  (x, y, z (cm), rotate (dgree))
 position_limit = (300, 300, 300, 180)
 ```
+
+Note:
+* **Verify the motion limit range of Tello for your safety.**
+'position_limit' (used with tracking mode) is not the actual position of Tello but the position calcurated by this applicaiton per sending command to Tello. 
+
 
 
 ### Run app
@@ -133,11 +132,11 @@ http://127.0.0.1:5000/
 ```
 5. connet to Tello (click the connect button)
 
-<a href="https://raw.githubusercontent.com/wiki/kodamap/tellooo/images/tellooo_s.png">
-<img src="https://raw.githubusercontent.com/wiki/kodamap/tellooo/images/tellooo_s.png" alt="start" style="width:auto;height:auto;" ></a>
+<a href="https://raw.githubusercontent.com/wiki/kodamap/tellooo/images/tellooo_p.jpg">
+<img src="https://raw.githubusercontent.com/wiki/kodamap/tellooo/images/tellooo_p.jpg" alt="pooh" style="width:auto;height:auto;" ></a>
 
 Note: 
-* if you can not connect Tello (no response:ok ) , make sure to be connected Tello's network and try to restart app (Stop(Ctl + C) , then run app again).
+* if you can not connect to Tello (no response:ok ) , make sure to connect Tello's network and try to restart app (Stop(Ctrl + C) , then run app again).
 * "test mode" means that 'object tracking' is enabled but **Tello moving ('sending command to Tello') is disabled**.
 
 
@@ -157,7 +156,8 @@ upper = 40, 255, 255
 
 ### Test on your PC
 
-Modify 'Tello_addr' of '[Tello]' section in Tello.cfg.
+Modify 'Tello_addr' of '[Tello]' section in tello.cfg.
+You can change this when you test udp video streaming on your pc. (see test\server.py)
 
 ```sh
 [Tello]
@@ -172,9 +172,10 @@ $ ffmpeg -f dshow -i video="Integrated Camera" -preset ultrafast -vcodec libx264
 
 ### Store bootstrap and jQuery on your pc
 
-You need to bootstrap and jQuery on your pc (see static/js , static/css)
-because you have internet connection while connectiong to Tello (Tello private network 192.168.10.0/24).
+You need to store bootstrap, jQuery and fontawesome locally. (see static/js , static/css),
+because you have no internet connection while connecting Tello.
 
 Tested with these version:
 * jquery-3.3.1
 * bootstrap-4.1.3
+* fontawesome-free-5.5.0

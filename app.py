@@ -5,6 +5,7 @@ import configparser
 import socket
 import json
 import threading
+import re
 from time import sleep
 from logging import getLogger, basicConfig, DEBUG, INFO
 
@@ -25,6 +26,7 @@ basicConfig(
 streamon = False
 connected = False
 tello_response = ""
+speed = 100
 move_command = ("up", "down", "left", "right", "back", "forward", "cw", "ccw")
 
 
@@ -37,7 +39,7 @@ def send_command(command):
 
 def gen(camera):
     while True:
-        frame = camera.get_frame(stream_only, is_test)
+        frame = camera.get_frame(stream_only, is_test, speed)
         yield (b'--frame\r\n'
                b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n\r\n')
 
@@ -53,7 +55,7 @@ def index():
 
 @app.route('/video_feed')
 def video_feed():
-    camera = VideoCamera(s, algorithm, target_color, stream_only, is_test)
+    camera = VideoCamera(s, algorithm, target_color, stream_only, is_test, speed)
     return Response(
         gen(camera), mimetype='multipart/x-mixed-replace; boundary=frame')
 
@@ -85,6 +87,7 @@ def tellooo():
     global connected
     global streamon
     global tello_response
+    global speed
     tello_response = ""
     command = request.json['command']
     if command == 'streamon':
@@ -93,8 +96,11 @@ def tellooo():
         streamon = False
     if command in move_command:
         command = command + " 20"  # hard coded mininum motion 20 cm/degree
+    if re.search(r'speed \d+', command):
+        command = re.search(r'speed \d+', command).group(0)
+        speed = int(command.split(" ")[1])
     send_command(command)
-    if command == 'command' and tello_response == 'ok':
+    if command in('command') and tello_response == 'ok':
         connected = True
     result = {"command": command, "result": tello_response, "connected": connected, "streamon": streamon}
     logger.info("sent:{} res:{} con:{} stream:{}".format(command, tello_response, connected, streamon))

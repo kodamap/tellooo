@@ -17,7 +17,7 @@ track_interval = eval(config.get('tracking', 'track_interval'))
 
 
 class VideoCamera(object):
-    def __init__(self, socket, algorithm, target_color, stream_only, is_test):
+    def __init__(self, socket, algorithm, target_color, stream_only, is_test, speed):
         """Receive Tello video streaming.
            Tello sends video stream to your pc using udp port 11111. 
         """
@@ -25,6 +25,7 @@ class VideoCamera(object):
         self.video_prop = self._get_video_prop()
         self.stream_only = stream_only
         self.is_test = is_test
+        self.speed = speed
         self.init_track_window = self._set_track_window()
         self.track_window = self.init_track_window
         self.track_window0 = self.track_window
@@ -92,16 +93,17 @@ class VideoCamera(object):
         self.track_data = "track win:{} area:({}/{} {}) speed:{}".format(
             self.track_window, track_area[0] * track_area[1],
             self.track_window[2] * self.track_window[3], track_area_ratio,
-            self.tello.speed)
+            self.speed)
         current_position = self.tello.current_position()
         self.position = "current pos:{} ({}, {})".format(current_position,
                                                          abs(move_ratio[0]),
                                                          abs(move_ratio[1]))
         sleep(track_interval)
 
-    def get_frame(self, stream_only, is_test):
+    def get_frame(self, stream_only, is_test, speed):
         self.stream_only = stream_only
         self.is_test = is_test
+        self.speed = speed
         if is_test:
             mode = ("test", (0, 128, 0))
         else:

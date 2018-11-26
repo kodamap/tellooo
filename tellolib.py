@@ -21,7 +21,6 @@ cw = eval(config.get('tello', 'cw'))
 ccw = eval(config.get('tello', 'ccw'))
 move_interval = eval(config.get('tello', 'move_interval'))
 rotate_interval = eval(config.get('tello', 'rotate_interval'))
-speed = eval(config.get('tello', 'speed'))
 move_ratio_threshold = eval(config.get('tello', 'move_ratio_threshold'))
 min_area = eval(config.get('tracking', 'min_area'))
 back_ratio = eval(config.get('tracking', 'back_ratio'))
@@ -33,12 +32,11 @@ class TelloMove(object):
     def __init__(self, socket, is_test):
         self.s = socket
         self.is_test = is_test
-        self.speed = speed[0]
-        self.speed_max = speed[1]
-        self.sent_command = 'speed'
+        self.sent_command = 'battery?'
+        """ create initail thread """
         self.t = threading.Thread(
             target=self._send_msg,
-            args=((self.sent_command, self.speed), 0, self.is_test))
+            args=((self.sent_command, ), 0, self.is_test))
         self.t.start()
         self.xpos, self.ypos, self.zpos, self.rotate = [0, 0, 0, 0]
         self.xpos_limit, self.ypos_limit, self.zpos_limit, self.rotate_limit = pos_limit
@@ -70,7 +68,7 @@ class TelloMove(object):
     def _send_msg(self, *args):
         logger.debug("args:{}, len:{}".format(args, len(args)))
         """parse arg
-          args : ex. Thread (('cw', 0), 0.1, True)
+          args : ex. Thread (('cw', 20), 0.1, True)
         """
         command = args[0][0]
         interval = args[1]
@@ -88,31 +86,12 @@ class TelloMove(object):
             threading.current_thread().name, msg, interval, self.is_test))
         sleep(interval)
 
-    def _set_speed(self, move_ratio):
-        """speed up parameter when camera detected rapid motion."""
-        if (abs(move_ratio[0]), abs(move_ratio[1])) > move_ratio_threshold:
-            if self.speed != speed[1]:
-                self.speed = speed[1]
-                """to prevent current speed from exceeding max speed"""
-                if self.speed > self.speed_max:
-                    self.speed = self.speed_max
-                logger.info("speed up! move_ratio:({}, {}) speed: {}".format(
-                    abs(move_ratio[0]), abs(move_ratio[1]), self.speed))
-                self._send_msg(('speed ', self.speed), 0, self.is_test)
-        else:
-            if self.speed != speed[0]:
-                self.speed = speed[0]
-                logger.info("speed down! move_ratio:({}, {}) speed: {}".format(
-                    abs(move_ratio[0]), abs(move_ratio[1]), self.speed))
-                self._send_msg(('speed ', self.speed), 0, self.is_test)
-
-    def _move_tello(self, command, move_ratio, track_area_ratio):
+    def _move_tello(self, command, track_area_ratio):
         if not self.t.is_alive():
             if command in ('cw', 'ccw'):
                 interval = rotate_interval
             else:
                 interval = move_interval
-            self._set_speed(move_ratio)
             self.t = threading.Thread(
                 target=self._send_msg,
                 args=((command, eval(command)[0]), interval, self.is_test))
@@ -148,7 +127,7 @@ class TelloMove(object):
             if self.zpos > self.zpos_limit * -1:
                 command = "forward"
         if command:
-            self._move_tello(command, move_ratio, track_area_ratio)
+            self._move_tello(command, track_area_ratio)
             return
         """ right, left and rotate motion
             cw / ccw would make move_raito high. Checking sent command prevents tello from confusing.
@@ -168,7 +147,7 @@ class TelloMove(object):
                 if self.xpos < self.xpos_limit:
                     command = "left"
         if command:
-            self._move_tello(command, move_ratio, track_area_ratio)
+            self._move_tello(command, track_area_ratio)
         """ up and down motion """
         if y < ymin:
             if self.ypos < self.ypos_limit:
@@ -177,4 +156,4 @@ class TelloMove(object):
             if self.ypos > self.ypos_limit * -1:
                 command = "down"
         if command:
-            self._move_tello(command, move_ratio, track_area_ratio)
+            self._move_tello(command, track_area_ratio)
