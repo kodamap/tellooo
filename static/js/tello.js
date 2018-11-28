@@ -3,7 +3,7 @@ $(function () {
     var info_cmd = ['battery?', 'speed?', 'temp?'];
     var tracking_cmd = ['streamonly', 'test', 'tracking'];
     var connect_cmd = ['command'];
-    var control_cmd = ['takeoff', 'land', 'up', 'down', 'left', 'right', 'forward', 'back', 'cw', 'ccw'];
+    var control_cmd = ['takeoff', 'land', 'up', 'down', 'left', 'right', 'forward', 'back', 'cw', 'ccw', "flip"];
     var info_flg = 0;
     var url = "";
     $(function () {
@@ -49,7 +49,7 @@ $(function () {
             url = '/info';
         } else if (connect_cmd.includes(JSON.parse(command).command)) {
             url = '/tellooo';
-        } else if (control_cmd.includes(JSON.parse(command).command)) {
+        } else if (control_cmd.includes(JSON.parse(command).command) || JSON.parse(command).command.match(/flip [l,r,f,b]/)) {
             url = '/tellooo';
         } else if (stream_cmd.includes(JSON.parse(command).command)) {
             url = '/tellooo';
@@ -70,6 +70,7 @@ $(function () {
             var tello_res = JSON.parse(data.ResultSet).result;
             var connected = JSON.parse(data.ResultSet).connected;
             var streamon = JSON.parse(data.ResultSet).streamon;
+            //console.log(JSON.parse(data.ResultSet));
             if (connected) {
                 if (connect_cmd.includes(sent_cmd)) {
                     $("#res").text(sent_cmd + ":" + tello_res);
@@ -89,7 +90,7 @@ $(function () {
                 if (sent_cmd == "temp?") {
                     $("#temp").text(sent_cmd + ":" + tello_res);
                 }
-                if (control_cmd.includes(sent_cmd) || tracking_cmd.includes(sent_cmd)) {
+                if (control_cmd.includes(sent_cmd) || tracking_cmd.includes(sent_cmd) || sent_cmd.match(/flip [l,r,f,b]/)) {
                     $("#res").text(sent_cmd + ":" + tello_res);
                 }
                 if (stream_cmd.includes(sent_cmd)) {
@@ -103,8 +104,13 @@ $(function () {
             } else {
                 $("#res").text('Click connect at first!');
             }
+        }).fail(function (jqXHR, textStatus, errorThrown) {
+            $("#res").text(textStatus + ":" + jqXHR.status + " " + errorThrown);
         });
         return false;
     }
+    $(function () {
+        $('[data-toggle="tooltip"]').tooltip()
+    });
 });
 

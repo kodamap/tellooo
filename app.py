@@ -99,6 +99,8 @@ def tellooo():
     if re.search(r'speed \d+', command):
         command = re.search(r'speed \d+', command).group(0)
         speed = int(command.split(" ")[1])
+    if re.search(r'flip [l,r,f,b]', command):
+        command = re.search(r'flip [l,r,f,b]', command).group(0)
     send_command(command)
     if command in('command') and tello_response == 'ok':
         connected = True

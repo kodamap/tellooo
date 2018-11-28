@@ -40,7 +40,7 @@
             <div class="col-lg-12">
                 <div class="btn-group btn-group-toggle" data-toggle="buttons">
                     {% if streamon %}
-                    <label id="streamon" class="btn btn-secondary">
+                    <label id="streamon" class="btn btn-success">
                         <input type="radio" value="streamon" autocomplete="off">streamon</label>
                     <label id="streamoff" class="btn btn-light">
                         <input type="radio" value="streamoff" autocomplete="off">streamoff</label>
@@ -75,24 +75,28 @@
             <div class="col-lg-4">
                 <div class="row justify-content-center">
                     <div class="col-3">
-                        <button type="button" class="btn btn-primary btn-circle btn-lg" data-toggle="button"
-                            aria-pressed="false" autocomplete="off" id="up" value="up"><i class="fas fa-angle-double-up"></i></button>
+                        <button type="button" class="btn btn-primary btn-circle btn-lg" data-toggle="tooltip"
+                            data-placement="bottom" aria-pressed="false" autocomplete="off" id="up" value="up" title="fly up"><i
+                                class="fas fa-angle-double-up"></i></button>
                     </div>
                 </div>
                 <div class="row justify-content-around">
                     <div class="col-3">
-                        <button type="button" class="btn btn-primary btn-circle btn-lg" data-toggle="button"
-                            aria-pressed="false" autocomplete="off" id="cw" value="cw"><i class="fas fa-redo"></i></button>
+                        <button type="button" class="btn btn-primary btn-circle btn-lg" data-toggle="tooltip"
+                            data-placement="left" aria-pressed="false" autocomplete="off" id="cw" value="cw" title="rotate clockwise"><i
+                                class="fas fa-redo"></i></button>
                     </div>
                     <div class="col-3">
-                        <button type="button" class="btn btn-primary btn-circle btn-lg" data-toggle="button"
-                            aria-pressed="false" autocomplete="off" id="ccw" value="ccw"><i class="fas fa-undo"></i></button>
+                        <button type="button" class="btn btn-primary btn-circle btn-lg" data-toggle="tooltip"
+                            data-placement="right" aria-pressed="false" autocomplete="off" id="ccw" value="ccw" title="rotate counter-clockwise"><i
+                                class="fas fa-undo"></i></button>
                     </div>
                 </div>
                 <div class="row justify-content-center">
                     <div class="col-3">
-                        <button type="button" class="btn btn-primary btn-circle btn-lg" data-toggle="button"
-                            aria-pressed="false" autocomplete="off" id="down" value="down"><i class="fas fa-angle-double-down"></i></button>
+                        <button type="button" class="btn btn-primary btn-circle btn-lg" data-toggle="tooltip"
+                            data-placement="top" aria-pressed="false" autocomplete="off" id="down" value="down" title="fly down"><i
+                                class="fas fa-angle-double-down"></i></button>
                     </div>
                 </div>
             </div>
@@ -108,26 +112,44 @@
             <div class="col-lg-4">
                 <div class="row justify-content-center">
                     <div class="col-3">
-                        <button type="button" class="btn btn-primary btn-circle btn-lg" data-toggle="button"
-                            aria-pressed="false" autocomplete="off" id="forward" value="forward"><i class="fas fa-forward"></i></button>
+                        <button type="botton" class="btn btn-primary btn-circle btn-lg" data-toggle="tooltip"
+                            data-placement="top" aria-pressed="false" autocomplete="off" id="forward" value="forward"
+                            title="fly forward"><i class="fas fa-forward"></i></button>
                     </div>
                 </div>
                 <div class="row justify-content-around">
                     <div class="col-3">
-                        <button type="button" class="btn btn-primary btn-circle btn-lg" data-toggle="button"
-                            aria-pressed="false" autocomplete="off" id="right" value="right"><i class="fas fa-arrow-left"></i></button>
+                        <button type="button" class="btn btn-primary btn-circle btn-lg" data-toggle="tooltip"
+                            data-placement="left" aria-pressed="false" autocomplete="off" id="right" value="right"
+                            title="fly right"><i class="fas fa-arrow-left"></i></button>
                     </div>
                     <div class="col-3">
-                        <button type="button" class="btn btn-primary btn-circle btn-lg" data-toggle="button"
-                            aria-pressed="false" autocomplete="off" id="left" value="left"><i class="fas fa-arrow-right"></i></button>
+                        <button type="button" class="btn btn-primary btn-circle btn-lg" data-toggle="tooltip"
+                            data-placement="right" aria-pressed="false" autocomplete="off" id="left" value="left" title="fly left"><i
+                                class="fas fa-arrow-right"></i></button>
                     </div>
                 </div>
                 <div class="row justify-content-center">
                     <div class="col-3">
-                        <button type="button" class="btn btn-primary btn-circle btn-lg" data-toggle="button"
-                            aria-pressed="false" autocomplete="off" id="back" value="back"><i class="fas fa-backward"></i></button>
+                        <button type="button" class="btn btn-primary btn-circle btn-lg" data-toggle="tooltip"
+                            data-placement="top" aria-pressed="false" autocomplete="off" id="back" value="back" title="fly back"><i
+                                class="fas fa-backward"></i></button>
                     </div>
                 </div>
+            </div>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-lg-4">
+                <p class="bg-warning">flip motion(red button): Please be careful around !</p>
+                <button type="button" class="btn btn-danger btn-circle btn-lg" data-toggle="tooltip" data-placement="left"
+                    aria-pressed="false" autocomplete="off" id="flip-b" value="flip b" title="fly flip back"><i class="fas fa-backward"></i></button>
+                <button type="button" class="btn btn-danger btn-circle btn-lg" data-toggle="tooltip" data-placement="top"
+                    aria-pressed="false" autocomplete="off" id="flip-f" value="flip f" title="fly flip forward"><i
+                        class="fas fa-forward"></i></button>
+                <button type="button" class="btn btn-danger btn-circle btn-lg" data-toggle="tooltip" data-placement="top"
+                    aria-pressed="false" autocomplete="off" id="flip-r" value="flip r" title="fly flip right"><i class="fas fa-arrow-left"></i></button>
+                <button type="button" class="btn btn-danger btn-circle btn-lg" data-toggle="tooltip" data-placement="right"
+                    aria-pressed="false" autocomplete="off" id="flip-l" value="flip l" title="fly flip left"><i class="fas fa-arrow-right"></i></button>
             </div>
         </div>
         <div class="row">
@@ -141,6 +163,7 @@
             </div>
         </div>
     </div>
+    <script src="../static/js/popper.js"></script>
     <script src="../static/js/jquery-3.3.1.min.js"></script>
     <script src="../static/js/bootstrap.min.js"></script>
     <script src="../static/js/tello.js"></script>

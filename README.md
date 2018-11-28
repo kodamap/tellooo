@@ -7,7 +7,7 @@ This is test code of object tracking with Tello.
 You can do followings:
 * Video streaming from Tello on your browser.
 * Object / Color Tracking.
-* Change caputure mode (streamonly, test, tracking).
+* Change tracking mode (streamonly, test, tracking).
 
 [![](https://img.youtube.com/vi/5qkPdTKIr74/0.jpg)](https://www.youtube.com/watch?v=5qkPdTKIr74)
 
@@ -91,9 +91,9 @@ frame_prop = (320, 240, 16)
 * Tello setting 
 
 ```sh
-[Tello]
-# Tello address and port is not needed to change.
-Tello_addr = ('192.168.10.1', 8889)
+[tello]
+# tello address and port is not needed to change.
+tello_addr = ('192.168.10.1', 8889)
 # define move cm by operation (MIN, MAX, Tello sdk MAX)
 right = (20, 30, 500)
 left = (20, 30, 500)
@@ -114,7 +114,7 @@ position_limit = (300, 300, 300, 180)
 
 Note:
 * **Verify the motion limit range of Tello for your safety.**
-'position_limit' (used with tracking mode) is not the actual position of Tello but the position calcurated by this applicaiton per sending command to Tello. 
+position_limit is not the actual position of Tello but the position calcurated by this applicaiton per sending command to Tello. 
 
 
 
@@ -137,7 +137,8 @@ http://127.0.0.1:5000/
 
 Note: 
 * if you can not connect to Tello (no response:ok ) , make sure to connect Tello's network and try to restart app (Stop(Ctrl + C) , then run app again).
-* "test mode" means that 'object tracking' is enabled but **Tello moving ('sending command to Tello') is disabled**.
+* Red button (arrow icons) send Tello to flip motion command, be carefull around!
+* "test mode" means that 'object tracking' is enabled but **Tello moving (sending command to Tello) is disabled**.
 
 
 colors are defined  in color.ini
@@ -160,8 +161,8 @@ Modify 'Tello_addr' of '[Tello]' section in tello.cfg.
 You can change this when you test udp video streaming on your pc. (see test\server.py)
 
 ```sh
-[Tello]
-Tello_addr = ('127.0.0.1', 50007)
+[tello]
+tello_addr = ('127.0.0.1', 50007)
 ```
 
 To test video streaming , use ffmpeg.
@@ -170,12 +171,16 @@ To test video streaming , use ffmpeg.
 $ ffmpeg -f dshow -i video="Integrated Camera" -preset ultrafast -vcodec libx264 -tune zerolatency -b 900k -f mpegts udp://127.0.0.1:11111
 ```
 
+### Video capture does not display
+
+Make sure firewall settings on your PC.  Tello sends video stream  to your PC via udp port 11111, which is needed to be open.
+
 ### Store bootstrap and jQuery on your pc
 
-You need to store bootstrap, jQuery and fontawesome locally. (see static/js , static/css),
-because you have no internet connection while connecting Tello.
+bootstrap, jQuery and font awesome are stored locally since you have no internet connection while connecting Tello. (see static/js , static/css)
 
 Tested with these version:
 * jquery-3.3.1
 * bootstrap-4.1.3
-* fontawesome-free-5.5.0
+* font awesome-free-5.5.0
+* popper.js-1.14.5 (umd)
