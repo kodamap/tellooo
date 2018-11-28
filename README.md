@@ -137,7 +137,7 @@ http://127.0.0.1:5000/
 
 Note: 
 * if you can not connect to Tello (no response:ok ) , make sure to connect Tello's network and try to restart app (Stop(Ctrl + C) , then run app again).
-* Red button (arrow icons) send Tello to flip motion command, be carefull around!
+* Red buttons (arrow icons) send flip motion command to Tello, be careful around!
 * "test mode" means that 'object tracking' is enabled but **Tello moving (sending command to Tello) is disabled**.
 
 
