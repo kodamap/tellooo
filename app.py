@@ -1,3 +1,14 @@
+###############################################################################
+# 
+# The MIT License (MIT)
+# 
+# Copyright (c) 2014 Miguel Grinberg
+# 
+# Released under the MIT license
+# https://github.com/miguelgrinberg/flask-video-streaming/blob/master/LICENSE
+#
+###############################################################################
+
 from flask import Flask, Response, render_template, request, jsonify
 from camera import VideoCamera
 import argparse
@@ -14,6 +25,7 @@ app = Flask(__name__)
 config = configparser.ConfigParser()
 config.read('tello.cfg')
 tello_addr = eval(config.get('tello', 'tello_addr'))
+speed = eval(config.get('tello', 'speed'))
 config = configparser.ConfigParser()
 config.read('color.ini')
 colors = config.sections()
@@ -26,7 +38,6 @@ basicConfig(
 streamon = False
 connected = False
 tello_response = ""
-speed = 100
 move_command = ("up", "down", "left", "right", "back", "forward", "cw", "ccw")
 
 
@@ -55,7 +66,8 @@ def index():
 
 @app.route('/video_feed')
 def video_feed():
-    camera = VideoCamera(s, algorithm, target_color, stream_only, is_test, speed)
+    camera = VideoCamera(s, algorithm, target_color, stream_only, is_test,
+                         speed)
     return Response(
         gen(camera), mimetype='multipart/x-mixed-replace; boundary=frame')
 
@@ -77,8 +89,14 @@ def tracking():
     elif command == "test":
         stream_only = False
         is_test = True
-    result = {"command": command, "result": tello_response, "connected": connected, "streamon": streamon}
-    logger.info("sent:{} res:{} con:{} stream:{}".format(command, tello_response, connected, streamon))
+    result = {
+        "command": command,
+        "result": tello_response,
+        "connected": connected,
+        "streamon": streamon
+    }
+    logger.info("sent:{} res:{} con:{} stream:{}".format(
+        command, tello_response, connected, streamon))
     return jsonify(ResultSet=json.dumps(result))
 
 
@@ -90,10 +108,6 @@ def tellooo():
     global speed
     tello_response = ""
     command = request.json['command']
-    if command == 'streamon':
-        streamon = True
-    if command == 'streamoff':
-        streamon = False
     if command in move_command:
         command = command + " 20"  # hard coded mininum motion 20 cm/degree
     if re.search(r'speed \d+', command):
@@ -102,10 +116,20 @@ def tellooo():
     if re.search(r'flip [l,r,f,b]', command):
         command = re.search(r'flip [l,r,f,b]', command).group(0)
     send_command(command)
-    if command in('command') and tello_response == 'ok':
+    if command == 'command' and tello_response == 'ok':
         connected = True
-    result = {"command": command, "result": tello_response, "connected": connected, "streamon": streamon}
-    logger.info("sent:{} res:{} con:{} stream:{}".format(command, tello_response, connected, streamon))
+    if command == 'streamon' and tello_response == 'ok':
+        streamon = True
+    if command == 'streamoff' and tello_response == 'ok':
+        streamon = False
+    result = {
+        "command": command,
+        "result": tello_response,
+        "connected": connected,
+        "streamon": streamon
+    }
+    logger.info("sent:{} res:{} con:{} stream:{}".format(
+        command, tello_response, connected, streamon))
     return jsonify(ResultSet=json.dumps(result))
 
 
@@ -117,8 +141,14 @@ def info():
     tello_response = ""
     command = request.json['command']
     send_command(command)
-    result = {"command": command, "result": tello_response, "connected": connected, "streamon": streamon}
-    logger.info("sent:{} res:{} con:{} stream:{}".format(command, tello_response, connected, streamon))
+    result = {
+        "command": command,
+        "result": tello_response,
+        "connected": connected,
+        "streamon": streamon
+    }
+    logger.info("sent:{} res:{} con:{} stream:{}".format(
+        command, tello_response, connected, streamon))
     return jsonify(ResultSet=json.dumps(result))
 
 

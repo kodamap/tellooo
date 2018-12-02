@@ -1,3 +1,13 @@
+# Based on 
+# https://dl-cdn.ryzerobotics.com/downloads/tello/20180222/Tello3.py
+#
+# Tello Python3 Control Demo 
+#
+# http://www.ryzerobotics.com/
+#
+# 1/1/2018
+
+
 import socket
 import shlex
 from subprocess import CREATE_NEW_CONSOLE, Popen
@@ -14,7 +24,6 @@ colors = config.sections()
 
 
 def tracking():
-
     while True:
         print("you can select colors:{} or input:['s or stream', 't or test']".
               format(colors))
@@ -78,7 +87,6 @@ if __name__ == '__main__':
                     print('\nExit . . .\n')
                     break
 
-        #recvThread create
         recvThread = threading.Thread(target=recv)
         recvThread.start()
 

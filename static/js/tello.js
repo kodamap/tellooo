@@ -22,7 +22,7 @@ $(function () {
         }, 5000);
     });
     $(function () {
-        var n = 100;
+        var n = 20;
         var speed_range = 20;
         $('#qty').val(n);
         $('.plus').on('click', function () {
@@ -84,7 +84,7 @@ $(function () {
                     $("#battery").text(sent_cmd + ":" + tello_res);
                 }
                 if (sent_cmd == "speed?" || sent_cmd.match(/speed \d+/)) {
-                    sent_cmd = sent_cmd.split(" ", 1)
+                    sent_cmd = sent_cmd.split(" ", 1)[0]
                     $("#speed").text(sent_cmd + ":" + tello_res);
                 }
                 if (sent_cmd == "temp?") {

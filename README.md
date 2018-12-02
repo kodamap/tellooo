@@ -14,7 +14,7 @@ You can do followings:
 browser image
 
 <a href="https://raw.githubusercontent.com/wiki/kodamap/tellooo/images/tellooo_s.jpg">
-<img src="https://raw.githubusercontent.com/wiki/kodamap/tellooo/images/tellooo_s.jpg" alt="start" style="width:auto;height:auto;" ></a>
+<img src="https://raw.githubusercontent.com/wiki/kodamap/tellooo/images/tellooo_s.jpg" alt="start" style="width:75%;height:auto;" ></a>
 
 ## Reference
 
@@ -133,12 +133,12 @@ http://127.0.0.1:5000/
 5. connet to Tello (click the connect button)
 
 <a href="https://raw.githubusercontent.com/wiki/kodamap/tellooo/images/tellooo_p.jpg">
-<img src="https://raw.githubusercontent.com/wiki/kodamap/tellooo/images/tellooo_p.jpg" alt="pooh" style="width:auto;height:auto;" ></a>
+<img src="https://raw.githubusercontent.com/wiki/kodamap/tellooo/images/tellooo_p.jpg" alt="pooh" style="width:75%;height:auto;" ></a>
 
 Note: 
 * if you can not connect to Tello (no response:ok ) , make sure to connect Tello's network and try to restart app (Stop(Ctrl + C) , then run app again).
-* Red buttons (arrow icons) send flip motion command to Tello, be careful around!
-* "test mode" means that 'object tracking' is enabled but **Tello moving (sending command to Tello) is disabled**.
+* Red buttons (arrow icons) send flip motion command to Tello. Be careful around!
+* "test mode" means that 'object tracking' is enabled but ** motion of Tello (sending command to Tello) is disabled**.
 
 
 colors are defined  in color.ini

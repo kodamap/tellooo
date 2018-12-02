@@ -1,7 +1,20 @@
-"""
-ref: https://github.com/opencv/opencv/blob/master/samples/python/camshift.py
-     https://docs.opencv.org/3.4.2/df/d9d/tutorial_py_colorspaces.html
-"""
+###############################################################################
+#                          License Agreement
+#               For Open Source Computer Vision Library
+#                       (3-clause BSD License)
+#
+# Copyright (C) 2000-2018, Intel Corporation, all rights reserved.
+# Copyright (C) 2009-2011, Willow Garage Inc., all rights reserved.
+# Copyright (C) 2009-2016, NVIDIA Corporation, all rights reserved.
+# Copyright (C) 2010-2013, Advanced Micro Devices, Inc., all rights reserved.
+# Copyright (C) 2015-2016, OpenCV Foundation, all rights reserved.
+# Copyright (C) 2015-2016, Itseez Inc., all rights reserved.
+# Third party copyrights are property of their respective owners.
+# 
+# Released under the MIT license
+# https://github.com/opencv/opencv/blob/master/LICENSE
+# 
+###############################################################################
 
 import numpy as np
 import cv2

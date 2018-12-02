@@ -1,3 +1,7 @@
+""" ref:
+https://github.com/ECI-Robotics/opencv_remote_streaming_processing/
+"""
+
 import cv2
 import camshift
 import meanshift
@@ -6,7 +10,8 @@ import tellolib
 import threading
 from time import time, sleep
 import math
-"""locad config"""
+"""locad configuration
+"""
 config = configparser.ConfigParser()
 config.read('tello.cfg')
 frame_prop = eval(config.get('camera', 'frame_prop'))
@@ -17,9 +22,10 @@ track_interval = eval(config.get('tracking', 'track_interval'))
 
 
 class VideoCamera(object):
-    def __init__(self, socket, algorithm, target_color, stream_only, is_test, speed):
-        """Receive Tello video streaming.
-           Tello sends video stream to your pc using udp port 11111. 
+    def __init__(self, socket, algorithm, target_color, stream_only, is_test,
+                 speed):
+        """Receive Tello's video streaming.
+           Tello sends video stream to your pc using udp port 11111
         """
         self.video = cv2.VideoCapture('udp://127.0.0.1:11111')
         self.video_prop = self._get_video_prop()
@@ -30,18 +36,24 @@ class VideoCamera(object):
         self.track_window = self.init_track_window
         self.track_window0 = self.track_window
         self.margin_window = self._set_margin_window()
-        self.tello = tellolib.TelloMove(socket, is_test)
+        self.tello = tellolib.TelloMove(socket, is_test, speed)
+        """ Create opencv tracking instnace
+        """
         if algorithm == "meanshift":
             self.tracking = meanshift.MeanShift(
                 frame_prop, self.ini_track_window, target_color)
         else:
             self.tracking = camshift.CamShift(
                 frame_prop, self.init_track_window, target_color)
+        """ Set text put on frames
+        """
         self.params = "{}*{}({}) {} intvl:{} margin:{} {} {}".format(
             self.video_prop[0], self.video_prop[1], self.video_prop[2],
             frame_prop, track_interval, frame_margin, algorithm, target_color)
         self.track_data = "track window:{}({}) {}".format(0, 0, 0)
         self.position = "current pos:{}({})".format(0, 0)
+        """ Read first frame and Create thread
+        """
         ret, self.frame = self.video.read()
         self.t = threading.Thread(
             target=self._tracking, args=(ret, self.frame))

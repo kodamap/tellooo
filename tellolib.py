@@ -29,14 +29,14 @@ pos_limit = eval(config.get('tracking', 'position_limit'))
 
 
 class TelloMove(object):
-    def __init__(self, socket, is_test):
+    def __init__(self, socket, is_test, speed):
         self.s = socket
         self.is_test = is_test
-        self.sent_command = 'battery?'
+        self.sent_command = 'speed'
         """ create initail thread """
         self.t = threading.Thread(
             target=self._send_msg,
-            args=((self.sent_command, ), 0, self.is_test))
+            args=((self.sent_command, speed), 0, self.is_test))
         self.t.start()
         self.xpos, self.ypos, self.zpos, self.rotate = [0, 0, 0, 0]
         self.xpos_limit, self.ypos_limit, self.zpos_limit, self.rotate_limit = pos_limit
