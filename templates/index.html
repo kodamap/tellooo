@@ -12,32 +12,59 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-lg-12">
+                <nav class="navbar navbar-expand-lg navbar-dark bg-dark rounded">
+                    <a class="navbar-brand" href="#">Object tracking with Tello</a>
+                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+                        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                        <ul class="navbar-nav mr-auto">
+                            <li class="nav-item active">
+                                <a class="nav-link" onclick="return false;">Home <span class=" sr-only">(current)</span></a>
+                            </li>
+                        </ul>
+                        <form class="form-inline my-2 my-lg-0">
+                            <span class="navbar-text">
+                                <i class="fas fa-tachometer-alt" data-toggle="tooltip" data-placement="top" title="Speed of tello motion"></i>
+                                <span class="plus button rounded" id="speed-plus"><i class="fas fa-plus"></i></span>
+                                <input type="text" name="speed" id="speed" malgength="3" />
+                                <span class="min button rounded" id="speed-min"><i class="fas fa-minus"></i></span>
+                            </span>
+                            <span class="navbar-text">
+                                <i class="fas fa-helicopter" data-toggle="tooltip" data-placement="top" title="Distance per tello motion "></i>
+                                <span class="plus button rounded" id="distance-plus"><i class="fas fa-plus"></i></span>
+                                <input type="text" name="distance" id="distance" malgength="3" />
+                                <span class="min button rounded" id="distance-min"><i class="fas fa-minus"></i></span>
+                                (min:20 max:100)
+                            </span>
+                        </form>
+                    </div>
+                </nav>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-12">
                 {% if connected and streamon %}
-                <h1 class="text-center rounded" id="res">Reponse displayed here.</h1>
+                <div class="text-center rounded" id="res">Reponse displayed here.</div>
                 {% elif connected %}
-                <h1 class="text-center rounded" id="res">Click streamon!</h1>
+                <div class="text-center rounded" id="res">Click streamon!</div>
                 {% else %}
-                <h1 class="text-center rounded" id="res">Click connect!</h1>
+                <div class="text-center rounded" id="res">Click connect!</div>
                 {% endif %}
             </div>
         </div>
         <div class="row">
             <div class="col-lg-12">
-                {% if connected %}
-                <button type="button" class="btn btn-success" data-toggle="button" aria-pressed="false" autocomplete="off"
-                    id="command" value="command">connect</button>
-                {% else %}
-                <button type="button" class="btn btn-danger" data-toggle="button" aria-pressed="false" autocomplete="off"
-                    id="command" value="command">connect</button>
-                {% endif %}
-                <i class="fas fa-tachometer-alt fa-2x"></i> <span class="plus button rounded"><i class="fas fa-plus"></i></span>
-                <input type="text" name="qty" id="qty" malgength="6" />
-                <span class="min button rounded"><i class="fas fa-minus"></i></span> (min:20 max:100)
-                </span>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-lg-12">
+                <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                    {% if connected %}
+                    <button type="button" class="btn btn-success" data-toggle="button" aria-pressed="false"
+                        autocomplete="off" id="command" value="command">connect</button>
+                    {% else %}
+                    <button type="button" class="btn btn-danger" data-toggle="button" aria-pressed="false" autocomplete="off"
+                        id="command" value="command">connect</button>
+                    {% endif %}
+                </div>
                 <div class="btn-group btn-group-toggle" data-toggle="buttons">
                     {% if streamon %}
                     <label id="streamon" class="btn btn-success">
@@ -68,39 +95,39 @@
                         <input type="radio" value="test" autocomplete="off">test</label>
                     <label id="tracking" class="btn btn-dark">
                         <input type="radio" value="tracking" autocomplete="off">tracking</label>
+                    {% if enable_detection %}
+                    <label id="detection" class="btn btn-dark">
+                        <input type="radio" value="detection" autocomplete="off">detection</label>
+                    {% endif %}
                 </div>
+                <button type="button" class="btn btn-second btn-circle btn-lg" data-toggle="tooltip" data-placement="top"
+                    aria-pressed="false" autocomplete="off" id="flip-y" value="flip-y" title="flipping around y-axis">
+                    <i class="fas fa-video"></i></button>
             </div>
         </div>
         <div class="row">
-            <div class="col-lg-4">
-                <div class="row justify-content-center">
-                    <div class="col-3">
-                        <button type="button" class="btn btn-primary btn-circle btn-lg" data-toggle="tooltip"
-                            data-placement="top" aria-pressed="false" autocomplete="off" id="up" value="up" title="fly up"><i
-                                class="fas fa-angle-double-up"></i></button>
-                    </div>
-                </div>
-                <div class="row justify-content-around">
-                    <div class="col-3">
-                        <button type="button" class="btn btn-primary btn-circle btn-lg" data-toggle="tooltip"
-                            data-placement="left" aria-pressed="false" autocomplete="off" id="cw" value="cw" title="rotate clockwise"><i
-                                class="fas fa-redo"></i></button>
-                    </div>
-                    <div class="col-3">
-                        <button type="button" class="btn btn-primary btn-circle btn-lg" data-toggle="tooltip"
-                            data-placement="right" aria-pressed="false" autocomplete="off" id="ccw" value="ccw" title="rotate counter-clockwise"><i
-                                class="fas fa-undo"></i></button>
-                    </div>
-                </div>
-                <div class="row justify-content-center">
-                    <div class="col-3">
-                        <button type="button" class="btn btn-primary btn-circle btn-lg" data-toggle="tooltip"
-                            data-placement="top" aria-pressed="false" autocomplete="off" id="down" value="down" title="fly down"><i
-                                class="fas fa-angle-double-down"></i></button>
-                    </div>
-                </div>
+            <div class="col-lg-12">
+                <button type="button" class="btn btn-primary btn-circle btn-lg" data-toggle="tooltip" data-placement="top"
+                    aria-pressed="false" autocomplete="off" id="cw" value="cw" title="rotate clockwise"><i class="fas fa-redo"></i></button>
+                <button type="button" class="btn btn-primary btn-circle btn-lg" data-toggle="tooltip" data-placement="top"
+                    aria-pressed="false" autocomplete="off" id="ccw" value="ccw" title="rotate counter-clockwise"><i
+                        class="fas fa-undo"></i></button>
+                <button type="button" class="btn btn-primary btn-circle btn-lg" data-toggle="tooltip" data-placement="top"
+                    aria-pressed="false" autocomplete="off" id="up" value="up" title="fly up"><i class="fas fa-angle-double-up"></i></button>
+                <button type="button" class="btn btn-primary btn-circle btn-lg" data-toggle="tooltip" data-placement="top"
+                    aria-pressed="false" autocomplete="off" id="down" value="down" title="fly down"><i class="fas fa-angle-double-down"></i></button>
+                <button type="button" class="btn btn-primary btn-circle btn-lg" data-toggle="tooltip" data-placement="top"
+                    aria-pressed="false" autocomplete="off" id="back" value="back" title="fly back"><i class="fas fa-backward"></i></button>
+                <button type="botton" class="btn btn-primary btn-circle btn-lg" data-toggle="tooltip" data-placement="top"
+                    aria-pressed="false" autocomplete="off" id="forward" value="forward" title="fly forward"><i class="fas fa-forward"></i></button>
+                <button type="button" class="btn btn-primary btn-circle btn-lg" data-toggle="tooltip" data-placement="top"
+                    aria-pressed="false" autocomplete="off" id="left" value="left" title="fly left"><i class="fas fa-arrow-left"></i></button>
+                <button type="button" class="btn btn-primary btn-circle btn-lg" data-toggle="tooltip" data-placement="top"
+                    aria-pressed="false" autocomplete="off" id="right" value="right" title="fly right"><i class="fas fa-arrow-right"></i></button>
             </div>
-            <div class="col-lg-4">
+        </div>
+        <div class="row">
+            <div class="col-lg-12">
                 {% if streamon %}
                 <img class="img-fluid img-thumbnail rounded mx-auto d-block" src="{{ url_for('video_feed') }}" alt="...........">
                 {% elif connected %}
@@ -109,41 +136,9 @@
                 <img class="img-fluid img-thumbnail rounded mx-auto d-block" src="../../static/images/tello_w.png">
                 {% endif %}
             </div>
-            <div class="col-lg-4">
-                <div class="row justify-content-center">
-                    <div class="col-3">
-                        <button type="botton" class="btn btn-primary btn-circle btn-lg" data-toggle="tooltip"
-                            data-placement="top" aria-pressed="false" autocomplete="off" id="forward" value="forward"
-                            title="fly forward"><i class="fas fa-forward"></i></button>
-                    </div>
-                </div>
-                <div class="row justify-content-around">
-                    <div class="col-3">
-                        <button type="button" class="btn btn-primary btn-circle btn-lg" data-toggle="tooltip"
-                            data-placement="left" aria-pressed="false" autocomplete="off" id="right" value="right"
-                            title="fly right"><i class="fas fa-arrow-left"></i></button>
-                    </div>
-                    <div class="col-3">
-                        <button type="button" class="btn btn-primary btn-circle btn-lg" data-toggle="tooltip"
-                            data-placement="right" aria-pressed="false" autocomplete="off" id="left" value="left" title="fly left"><i
-                                class="fas fa-arrow-right"></i></button>
-                    </div>
-                </div>
-                <div class="row justify-content-center">
-                    <div class="col-3">
-                        <button type="button" class="btn btn-primary btn-circle btn-lg" data-toggle="tooltip"
-                            data-placement="top" aria-pressed="false" autocomplete="off" id="back" value="back" title="fly back"><i
-                                class="fas fa-backward"></i></button>
-                    </div>
-                </div>
-            </div>
         </div>
         <div class="row justify-content-center">
             <div class="col-lg-4">
-                <p class="bg-warning rounded"><i class="fas fa-exclamation-triangle"></i>Flip motion(Red
-                    button): Fly
-                    with
-                    caution !</p>
                 <button type="button" class="btn btn-danger btn-circle btn-lg" data-toggle="tooltip" data-placement="left"
                     aria-pressed="false" autocomplete="off" id="flip-b" value="flip b" title="fly flip back"><i class="fas fa-backward"></i></button>
                 <button type="button" class="btn btn-danger btn-circle btn-lg" data-toggle="tooltip" data-placement="top"
@@ -154,15 +149,19 @@
                 <button type="button" class="btn btn-danger btn-circle btn-lg" data-toggle="tooltip" data-placement="right"
                     aria-pressed="false" autocomplete="off" id="flip-l" value="flip l" title="fly flip left"><i class="fas fa-arrow-right"></i></button>
             </div>
+            <div class="col-lg-12">
+                <p class="bg-warning rounded"><i class="fas fa-exclamation-triangle"></i>Flip motion: Fly with
+                    caution!</p>
+            </div>
         </div>
         <div class="row">
             <div class="col-lg-12">
                 <button type="button" class="btn btn-info" data-toggle="button" aria-pressed="false" autocomplete="off"
-                    id="battery" value="battery?">battery?</button>
+                    id="info-battery" value="battery?">battery?</button>
                 <button type="button" class="btn btn-info" data-toggle="button" aria-pressed="false" autocomplete="off"
-                    id="speed" value="speed?">speed?</button>
+                    id="info-speed" value="speed?">speed?</button>
                 <button type="button" class="btn btn-info" data-toggle="button" aria-pressed="false" autocomplete="off"
-                    id="temp" value="temp?">temp?</button>
+                    id="info-temp" value="temp?">temp?</button>
             </div>
         </div>
     </div>

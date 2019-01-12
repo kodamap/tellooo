@@ -1,9 +1,10 @@
 $(function () {
     var stream_cmd = ['streamon', 'streamoff'];
     var info_cmd = ['battery?', 'speed?', 'temp?'];
-    var tracking_cmd = ['streamonly', 'test', 'tracking'];
+    var tracking_cmd = ['streamonly', 'test', 'tracking', 'detection'];
     var connect_cmd = ['command'];
     var control_cmd = ['takeoff', 'land', 'up', 'down', 'left', 'right', 'forward', 'back', 'cw', 'ccw', "flip"];
+    var flip_cmd = ['flip-x', 'flip-y', 'flip-both'];
     var info_flg = 0;
     var url = "";
     $(function () {
@@ -24,18 +25,37 @@ $(function () {
     $(function () {
         var n = 20;
         var speed_range = 20;
-        $('#qty').val(n);
-        $('.plus').on('click', function () {
+        $('#speed').val(n);
+        $('#speed-plus.plus').on('click', function () {
             if (n < 100) {
-                $('#qty').val(n = n + speed_range);
+                $('#speed').val(n = n + speed_range);
                 command = JSON.stringify({ "command": "speed " + n });
                 post('/tellooo', command);
             }
         });
-        $('.min').on('click', function () {
+        $('#speed-min.min').on('click', function () {
             if (n > 20) {
-                $('#qty').val(n = n - speed_range);
+                $('#speed').val(n = n - speed_range);
                 command = JSON.stringify({ "command": "speed " + n });
+                post('/tellooo', command);
+            }
+        });
+    });
+    $(function () {
+        var n = 20;
+        var distance_range = 20;
+        $('#distance').val(n);
+        $('#distance-plus.plus').on('click', function () {
+            if (n < 100) {
+                $('#distance').val(n = n + distance_range);
+                command = JSON.stringify({ "command": "distance " + n });
+                post('/tellooo', command);
+            }
+        });
+        $('#distance-min.min').on('click', function () {
+            if (n > 20) {
+                $('#distance').val(n = n - distance_range);
+                command = JSON.stringify({ "command": "distance " + n });
                 post('/tellooo', command);
             }
         });
@@ -45,6 +65,7 @@ $(function () {
         if (JSON.parse(command).command == "") {
             var command = JSON.stringify({ "command": $(this).find('input').val() });
         }
+        console.log(command, tracking_cmd.includes(JSON.parse(command).command))
         if (info_cmd.includes(JSON.parse(command).command)) {
             url = '/info';
         } else if (connect_cmd.includes(JSON.parse(command).command)) {
@@ -55,6 +76,8 @@ $(function () {
             url = '/tellooo';
         } else if (tracking_cmd.includes(JSON.parse(command).command)) {
             url = '/tracking';
+        } else if (flip_cmd.includes(JSON.parse(command).command)) {
+            url = '/flip';
         }
         post(url, command);
     });
@@ -81,14 +104,14 @@ $(function () {
                     }
                 }
                 if (sent_cmd == "battery?") {
-                    $("#battery").text(sent_cmd + ":" + tello_res);
+                    $("#info-battery").text(sent_cmd + ":" + tello_res);
                 }
                 if (sent_cmd == "speed?" || sent_cmd.match(/speed \d+/)) {
                     sent_cmd = sent_cmd.split(" ", 1)[0]
-                    $("#speed").text(sent_cmd + ":" + tello_res);
+                    $("#info-speed").text(sent_cmd + ":" + tello_res);
                 }
                 if (sent_cmd == "temp?") {
-                    $("#temp").text(sent_cmd + ":" + tello_res);
+                    $("#info-temp").text(sent_cmd + ":" + tello_res);
                 }
                 if (control_cmd.includes(sent_cmd) || tracking_cmd.includes(sent_cmd) || sent_cmd.match(/flip [l,r,f,b]/)) {
                     $("#res").text(sent_cmd + ":" + tello_res);

@@ -1,9 +1,9 @@
 ###############################################################################
-# 
+#
 # The MIT License (MIT)
-# 
+#
 # Copyright (c) 2014 Miguel Grinberg
-# 
+#
 # Released under the MIT license
 # https://github.com/miguelgrinberg/flask-video-streaming/blob/master/LICENSE
 #
@@ -24,6 +24,7 @@ app = Flask(__name__)
 
 config = configparser.ConfigParser()
 config.read('tello.cfg')
+flip_code = eval(config.get('camera', 'flip_code'))
 tello_addr = eval(config.get('tello', 'tello_addr'))
 speed = eval(config.get('tello', 'speed'))
 config = configparser.ConfigParser()
@@ -37,6 +38,9 @@ basicConfig(
 
 streamon = False
 connected = False
+detection = False
+distance = 20
+
 tello_response = ""
 move_command = ("up", "down", "left", "right", "back", "forward", "cw", "ccw")
 
@@ -50,7 +54,7 @@ def send_command(command):
 
 def gen(camera):
     while True:
-        frame = camera.get_frame(stream_only, is_test, speed)
+        frame = camera.get_frame(stream_only, is_test, speed, detection, is_flip)
         yield (b'--frame\r\n'
                b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n\r\n')
 
@@ -59,15 +63,18 @@ def gen(camera):
 def index():
     global connected
     global streamon
-    logger.info("connected: {} streamon:{}".format(connected, streamon))
+    logger.info("connected:{} streamon:{}".format(connected, streamon))
     return render_template(
-        'index.html', streamon=streamon, connected=connected)
+        'index.html',
+        streamon=streamon,
+        connected=connected,
+        enable_detection=enable_detection)
 
 
 @app.route('/video_feed')
 def video_feed():
     camera = VideoCamera(s, algorithm, target_color, stream_only, is_test,
-                         speed)
+                         speed, device, enable_detection)
     return Response(
         gen(camera), mimetype='multipart/x-mixed-replace; boundary=frame')
 
@@ -78,25 +85,27 @@ def tracking():
     global streamon
     global stream_only
     global is_test
+    global detection
     tello_response = ""
     command = request.json['command']
     if command == "streamonly":
-        stream_only = True
-        is_test = False
+        stream_only, is_test, detection = True, False, False
     elif command == "tracking":
-        stream_only = False
-        is_test = False
+        stream_only, is_test, detection = False, False, False
     elif command == "test":
-        stream_only = False
-        is_test = True
+        stream_only, is_test, detection = False, True, False
+    elif command == "detection":
+        stream_only, is_test, detection = False, False, True
     result = {
         "command": command,
         "result": tello_response,
         "connected": connected,
-        "streamon": streamon
+        "streamon": streamon,
+        "detection": detection
     }
-    logger.info("sent:{} res:{} con:{} stream:{}".format(
-        command, tello_response, connected, streamon))
+    logger.info("sent:{} res:{} con:{} stream:{} detection:{} is_filp_y: {}".
+                format(command, tello_response, connected, streamon, detection,
+                       is_flip))
     return jsonify(ResultSet=json.dumps(result))
 
 
@@ -106,13 +115,17 @@ def tellooo():
     global streamon
     global tello_response
     global speed
+    global distance
     tello_response = ""
     command = request.json['command']
     if command in move_command:
-        command = command + " 20"  # hard coded mininum motion 20 cm/degree
+        command = command + " " + str(distance)
     if re.search(r'speed \d+', command):
         command = re.search(r'speed \d+', command).group(0)
         speed = int(command.split(" ")[1])
+    if re.search(r'distance \d+', command):
+        command = re.search(r'distance \d+', command).group(0)
+        distance = int(command.split(" ")[1])
     if re.search(r'flip [l,r,f,b]', command):
         command = re.search(r'flip [l,r,f,b]', command).group(0)
     send_command(command)
@@ -128,8 +141,9 @@ def tellooo():
         "connected": connected,
         "streamon": streamon
     }
-    logger.info("sent:{} res:{} con:{} stream:{}".format(
-        command, tello_response, connected, streamon))
+    logger.info("sent:{} res:{} con:{} stream:{} detection:{} is_filp_y: {}".
+                format(command, tello_response, connected, streamon, detection,
+                       is_flip))
     return jsonify(ResultSet=json.dumps(result))
 
 
@@ -147,8 +161,28 @@ def info():
         "connected": connected,
         "streamon": streamon
     }
-    logger.info("sent:{} res:{} con:{} stream:{}".format(
-        command, tello_response, connected, streamon))
+    logger.info("sent:{} res:{} con:{} stream:{} detection:{} is_filp_y: {}".
+                format(command, tello_response, connected, streamon, detection,
+                       is_flip))
+    return jsonify(ResultSet=json.dumps(result))
+
+
+@app.route('/flip', methods=['POST'])
+def flip():
+    global is_flip
+    command = request.json['command']
+    if command == "flip-y":
+        is_flip = not is_flip
+    result = {
+        "command": command,
+        "result": tello_response,
+        "connected": connected,
+        "streamon": streamon,
+        "is_flip": is_flip
+    }
+    logger.info("sent:{} res:{} con:{} stream:{} detection:{} is_filp_y: {}".
+                format(command, tello_response, connected, streamon, detection,
+                       is_flip))
     return jsonify(ResultSet=json.dumps(result))
 
 
@@ -178,12 +212,29 @@ if __name__ == '__main__':
         help='select tracking color in color.ini',
         default='',
         choices=colors)
+    parser.add_argument(
+        "-d",
+        "--device",
+        help="Specify the target device to infer on; CPU, GPU, FPGA or MYRIAD is acceptable. Demo "
+        "will look for a suitable plugin for device specified (CPU by default)",
+        default="CPU",
+        type=str)
+    parser.add_argument(
+        '--enable_detection',
+        help='enable object detection using MobileNet-SSD',
+        action='store_true')
     args = parser.parse_args()
 
     algorithm = args.algorithm
     target_color = args.color
     stream_only = args.stream_only
     is_test = args.test
+    device = args.device
+    enable_detection = args.enable_detection
+    if flip_code == 1:
+        is_flip = True
+    else:
+        is_flip = False
     """ Create a UDP socket to send and receive message with tello """
     with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
         host = '0.0.0.0'

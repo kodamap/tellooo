@@ -33,13 +33,13 @@ class TelloMove(object):
         self.s = socket
         self.is_test = is_test
         self.sent_command = 'speed'
+        self.xpos, self.ypos, self.zpos, self.rotate = [0, 0, 0, 0]
+        self.xpos_limit, self.ypos_limit, self.zpos_limit, self.rotate_limit = pos_limit
         """ create initail thread """
         self.t = threading.Thread(
             target=self._send_msg,
             args=((self.sent_command, speed), 0, self.is_test))
         self.t.start()
-        self.xpos, self.ypos, self.zpos, self.rotate = [0, 0, 0, 0]
-        self.xpos_limit, self.ypos_limit, self.zpos_limit, self.rotate_limit = pos_limit
 
     def _calc_current_position(self, command, move_distance):
         if command == "left":
