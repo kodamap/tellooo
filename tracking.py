@@ -23,6 +23,7 @@ class Tracking(object):
                  is_test, speed, device, enable_detection):
         next_frame = frame
         self.track_frame = None
+        self.target_color = target_color
         self.is_test = is_test
         self.speed = speed
         self.init_track_window = self._set_track_window()
@@ -184,12 +185,12 @@ class Tracking(object):
         # always show video prames in the frame
         cv2.putText(self.track_frame, self.video_params, (10, 10),
                     cv2.FONT_HERSHEY_SIMPLEX, 0.35, (255, 255, 255), 1)
-        mode_and_speed = "MODE:{} ".format(mode[0])
+        mode_and_targetcolor = "MODE:{} {}".format(mode[0], self.target_color)
         cv2.rectangle(self.track_frame,
-                      (frame_prop[0] - 100, frame_prop[1] - 20), (frame_prop),
+                      (frame_prop[0] - 120, frame_prop[1] - 20), (frame_prop),
                       (255, 255, 255), -1)
-        cv2.putText(self.track_frame, mode_and_speed,
-                    (frame_prop[0] - 97, frame_prop[1] - 7),
+        cv2.putText(self.track_frame, mode_and_targetcolor,
+                    (frame_prop[0] - 117, frame_prop[1] - 7),
                     cv2.FONT_HERSHEY_SIMPLEX, 0.35, mode[1], 1)
 
         # Draw FPS in top left corner

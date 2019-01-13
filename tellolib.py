@@ -38,7 +38,7 @@ class TelloMove(object):
         """ create initail thread """
         self.t = threading.Thread(
             target=self._send_msg,
-            args=((self.sent_command, speed), 0, self.is_test))
+            args=((self.sent_command, speed), move_interval, self.is_test))
         self.t.start()
 
     def _calc_current_position(self, command, move_distance):
@@ -100,6 +100,9 @@ class TelloMove(object):
 
     def motion(self, track_window, track_area_ratio, move_ratio, margin_window,
                is_test):
+        """ initialize tello's position when tracking mode changes"""
+        if self.is_test != is_test:
+            self.xpos, self.ypos, self.zpos, self.rotate = [0, 0, 0, 0]
         self.is_test = is_test
         """ x, y, w, h: current positon of track window.
             xmin, ymin, xmax, ymax : position of margin window.

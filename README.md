@@ -174,7 +174,6 @@ URL: https://drive.google.com/open?id=18e4fhpPCBrJR-MVpAGcx-3NtFxWTcEGk
   * MD5 hash : 8e46de84d6ee0b61ff9224e7087e01e7
 
 * Extract extension.zip and store extension folder under tellooo(file lists)
-
 ```sh
 extension/cpu_extension.dll
 extension/IR/MobileNetSSD_FP16/MobileNetSSD_deploy.bin
