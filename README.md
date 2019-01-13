@@ -11,10 +11,12 @@ You can do followings:
 * Object detection (OpenVINO environment is required)
 
 browser demo (YouTube Link)
+
 [![](https://img.youtube.com/vi/JhoCNQa-FGc/0.jpg)](https://www.youtube.com/watch?v=JhoCNQa-FGc)
 
 
 Color tracking (YouTube Link)
+
 [![](https://img.youtube.com/vi/5qkPdTKIr74/0.jpg)](https://www.youtube.com/watch?v=5qkPdTKIr74)
 
 
