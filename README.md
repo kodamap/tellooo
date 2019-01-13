@@ -10,12 +10,12 @@ You can do followings:
 * Change tracking mode (streamonly, test, tracking).
 * Object detection (OpenVINO environment is required)
 
+browser demo (YouTube Link)
+[![](https://img.youtube.com/vi/JhoCNQa-FGc/0.jpg)](https://www.youtube.com/watch?v=JhoCNQa-FGc)
+
+
+Color tracking (YouTube Link)
 [![](https://img.youtube.com/vi/5qkPdTKIr74/0.jpg)](https://www.youtube.com/watch?v=5qkPdTKIr74)
-
-browser image
-
-<a href="https://raw.githubusercontent.com/wiki/kodamap/tellooo/images/tellooo_start.jpg">
-<img src="https://raw.githubusercontent.com/wiki/kodamap/tellooo/images/tellooo_start.jpg" alt="start" style="width:auto;height:auto;" ></a>
 
 
 ## Reference
