@@ -30,6 +30,11 @@ class Tracking(object):
         self.track_window = self.init_track_window
         self.track_window0 = self.track_window
         self.margin_window = self._set_margin_window()
+        """ initialize FPS """
+        self.accum_time = 0
+        self.curr_fps = 0
+        self.fps = "FPS: ??"
+        self.prev_time = timer()
         """ Create tello instnace """
         self.tello = tellolib.TelloMove(socket, self.is_test, speed)
         """ Create opencv tracking instnace """
@@ -55,11 +60,6 @@ class Tracking(object):
             track_interval, frame_margin, algorithm, target_color)
         self.track_data = "track window:{}({}) {}".format(0, 0, 0)
         self.position = "current pos:{}({})".format(0, 0)
-        """ initialize FPS """
-        self.accum_time = 0
-        self.curr_fps = 0
-        self.fps = "FPS: ??"
-        self.prev_time = timer()
 
     def _set_margin_window(self):
         frame_width, frame_height = frame_prop

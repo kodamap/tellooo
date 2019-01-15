@@ -21,11 +21,11 @@ class VideoCamera(object):
         self.video = cv2.VideoCapture('udp://127.0.0.1:11111')
         ret, frame = self.video.read()
         frame = cv2.resize(frame, frame_prop)
-        if ret:
-            video_prop = self._get_video_prop()
-            self.tracking = tracking.Tracking(socket, ret, frame, video_prop,
-                                              algorithm, target_color, is_test,
-                                              speed, device, enable_detection)
+        ##if ret:
+        video_prop = self._get_video_prop()
+        self.tracking = tracking.Tracking(socket, ret, frame, video_prop,
+                                          algorithm, target_color, is_test,
+                                          speed, device, enable_detection)
 
     def __del__(self):
         self.video.release()

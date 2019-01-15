@@ -65,7 +65,7 @@
                         id="command" value="command">connect</button>
                     {% endif %}
                 </div>
-                <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                <div class="btn-group btn-group-toggle" data-toggle="buttons" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i>">
                     {% if streamon %}
                     <label id="streamon" class="btn btn-success">
                         <input type="radio" value="streamon" autocomplete="off">streamon</label>
@@ -107,22 +107,22 @@
         </div>
         <div class="row">
             <div class="col-lg-12">
-                <button type="button" class="btn btn-primary btn-circle btn-lg" data-toggle="tooltip" data-placement="top"
+                <button type="button" class="btn btn-dark btn-circle btn-lg" data-toggle="tooltip" data-placement="top"
                     aria-pressed="false" autocomplete="off" id="cw" value="cw" title="rotate clockwise"><i class="fas fa-redo"></i></button>
-                <button type="button" class="btn btn-primary btn-circle btn-lg" data-toggle="tooltip" data-placement="top"
+                <button type="button" class="btn btn-dark btn-circle btn-lg" data-toggle="tooltip" data-placement="top"
                     aria-pressed="false" autocomplete="off" id="ccw" value="ccw" title="rotate counter-clockwise"><i
                         class="fas fa-undo"></i></button>
-                <button type="button" class="btn btn-primary btn-circle btn-lg" data-toggle="tooltip" data-placement="top"
+                <button type="button" class="btn btn-dark btn-circle btn-lg" data-toggle="tooltip" data-placement="top"
                     aria-pressed="false" autocomplete="off" id="up" value="up" title="fly up"><i class="fas fa-angle-double-up"></i></button>
-                <button type="button" class="btn btn-primary btn-circle btn-lg" data-toggle="tooltip" data-placement="top"
+                <button type="button" class="btn btn-dark btn-circle btn-lg" data-toggle="tooltip" data-placement="top"
                     aria-pressed="false" autocomplete="off" id="down" value="down" title="fly down"><i class="fas fa-angle-double-down"></i></button>
-                <button type="button" class="btn btn-primary btn-circle btn-lg" data-toggle="tooltip" data-placement="top"
+                <button type="button" class="btn btn-dark btn-circle btn-lg" data-toggle="tooltip" data-placement="top"
                     aria-pressed="false" autocomplete="off" id="back" value="back" title="fly back"><i class="fas fa-backward"></i></button>
-                <button type="botton" class="btn btn-primary btn-circle btn-lg" data-toggle="tooltip" data-placement="top"
+                <button type="botton" class="btn btn-dark btn-circle btn-lg" data-toggle="tooltip" data-placement="top"
                     aria-pressed="false" autocomplete="off" id="forward" value="forward" title="fly forward"><i class="fas fa-forward"></i></button>
-                <button type="button" class="btn btn-primary btn-circle btn-lg" data-toggle="tooltip" data-placement="top"
+                <button type="button" class="btn btn-dark btn-circle btn-lg" data-toggle="tooltip" data-placement="top"
                     aria-pressed="false" autocomplete="off" id="left" value="left" title="fly left"><i class="fas fa-arrow-left"></i></button>
-                <button type="button" class="btn btn-primary btn-circle btn-lg" data-toggle="tooltip" data-placement="top"
+                <button type="button" class="btn btn-dark btn-circle btn-lg" data-toggle="tooltip" data-placement="top"
                     aria-pressed="false" autocomplete="off" id="right" value="right" title="fly right"><i class="fas fa-arrow-right"></i></button>
             </div>
         </div>
@@ -137,8 +137,8 @@
                 {% endif %}
             </div>
         </div>
-        <div class="row justify-content-center">
-            <div class="col-lg-4">
+        <div class="row">
+            <div class="col-lg-12">
                 <button type="button" class="btn btn-danger btn-circle btn-lg" data-toggle="tooltip" data-placement="left"
                     aria-pressed="false" autocomplete="off" id="flip-b" value="flip b" title="fly flip back"><i class="fas fa-backward"></i></button>
                 <button type="button" class="btn btn-danger btn-circle btn-lg" data-toggle="tooltip" data-placement="top"
@@ -149,18 +149,19 @@
                 <button type="button" class="btn btn-danger btn-circle btn-lg" data-toggle="tooltip" data-placement="right"
                     aria-pressed="false" autocomplete="off" id="flip-l" value="flip l" title="fly flip left"><i class="fas fa-arrow-right"></i></button>
             </div>
+        </div>
+        <div class="row">
             <div class="col-lg-12">
-                <p class="bg-warning rounded"><i class="fas fa-exclamation-triangle"></i>Flip motion: Fly with
-                    caution!</p>
+                <i class="fas fa-exclamation-triangle"></i>Flip motion: Fly with caution!
             </div>
         </div>
         <div class="row">
             <div class="col-lg-12">
-                <button type="button" class="btn btn-info" data-toggle="button" aria-pressed="false" autocomplete="off"
+                <button type="button" class="btn btn-dark" data-toggle="button" aria-pressed="false" autocomplete="off"
                     id="info-battery" value="battery?">battery?</button>
-                <button type="button" class="btn btn-info" data-toggle="button" aria-pressed="false" autocomplete="off"
+                <button type="button" class="btn btn-dark" data-toggle="button" aria-pressed="false" autocomplete="off"
                     id="info-speed" value="speed?">speed?</button>
-                <button type="button" class="btn btn-info" data-toggle="button" aria-pressed="false" autocomplete="off"
+                <button type="button" class="btn btn-dark" data-toggle="button" aria-pressed="false" autocomplete="off"
                     id="info-temp" value="temp?">temp?</button>
             </div>
         </div>

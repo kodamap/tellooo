@@ -36,9 +36,7 @@ basicConfig(
     level=INFO,
     format="%(asctime)s %(levelname)s %(name)s %(funcName)s(): %(message)s")
 
-streamon = False
-connected = False
-detection = False
+streamon, connected, detection = False, False, False
 distance = 20
 
 tello_response = ""
@@ -54,7 +52,8 @@ def send_command(command):
 
 def gen(camera):
     while True:
-        frame = camera.get_frame(stream_only, is_test, speed, detection, is_flip)
+        frame = camera.get_frame(stream_only, is_test, speed, detection,
+                                 is_flip)
         yield (b'--frame\r\n'
                b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n\r\n')
 
@@ -63,6 +62,7 @@ def gen(camera):
 def index():
     global connected
     global streamon
+
     logger.info("connected:{} streamon:{}".format(connected, streamon))
     return render_template(
         'index.html',
@@ -103,9 +103,9 @@ def tracking():
         "streamon": streamon,
         "detection": detection
     }
-    logger.info("sent:{} res:{} con:{} stream:{} detection:{} is_filp_y: {}".
-                format(command, tello_response, connected, streamon, detection,
-                       is_flip))
+    logger.info(
+        "sent:{} res:{} con:{} stream:{} detection:{} is_filp_y: {}".format(
+            command, tello_response, connected, streamon, detection, is_flip))
     return jsonify(ResultSet=json.dumps(result))
 
 
@@ -141,9 +141,9 @@ def tellooo():
         "connected": connected,
         "streamon": streamon
     }
-    logger.info("sent:{} res:{} con:{} stream:{} detection:{} is_filp_y: {}".
-                format(command, tello_response, connected, streamon, detection,
-                       is_flip))
+    logger.info(
+        "sent:{} res:{} con:{} stream:{} detection:{} is_filp_y: {}".format(
+            command, tello_response, connected, streamon, detection, is_flip))
     return jsonify(ResultSet=json.dumps(result))
 
 
@@ -161,9 +161,9 @@ def info():
         "connected": connected,
         "streamon": streamon
     }
-    logger.info("sent:{} res:{} con:{} stream:{} detection:{} is_filp_y: {}".
-                format(command, tello_response, connected, streamon, detection,
-                       is_flip))
+    logger.info(
+        "sent:{} res:{} con:{} stream:{} detection:{} is_filp_y: {}".format(
+            command, tello_response, connected, streamon, detection, is_flip))
     return jsonify(ResultSet=json.dumps(result))
 
 
@@ -180,9 +180,9 @@ def flip():
         "streamon": streamon,
         "is_flip": is_flip
     }
-    logger.info("sent:{} res:{} con:{} stream:{} detection:{} is_filp_y: {}".
-                format(command, tello_response, connected, streamon, detection,
-                       is_flip))
+    logger.info(
+        "sent:{} res:{} con:{} stream:{} detection:{} is_filp_y: {}".format(
+            command, tello_response, connected, streamon, detection, is_flip))
     return jsonify(ResultSet=json.dumps(result))
 
 
