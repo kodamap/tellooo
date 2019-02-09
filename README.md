@@ -13,7 +13,7 @@ You can do followings:
 Face detection demo (YouTube Link)
 
 <a href="https://www.youtube.com/watch?v=I6-YKfPHo_g">
-<img src="https://qiita-image-store.s3.amazonaws.com/0/118309/23658392-1e07-ee3f-d51c-f34c7617bb7f.gif" alt="face detection" style="width:80%;height:auto;" ></a>
+<img src="https://raw.githubusercontent.com/wiki/kodamap/tellooo/images/OpenVINO_face_detection_with_Tello_6s.gif" alt="face detection" style="width:80%;height:auto;" ></a>
 
 
 
