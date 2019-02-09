@@ -11,9 +11,15 @@
   padding: .5rem;
 }
 
+.btn-dark:not(:disabled):not(.disabled).active,  .show>.btn-dark.dropdown-toggle {
+  color: #fff;
+  background-color: #007bff;
+  border-color: #4e555b;
+}
+
 #res {
   margin: 5px;
-  background-color: rgb(217, 217, 248);
+  background-color: rgb(171, 201, 240);
 }
 
 .btn-group{

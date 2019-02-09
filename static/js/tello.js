@@ -1,10 +1,14 @@
 $(function () {
     var stream_cmd = ['streamon', 'streamoff'];
     var info_cmd = ['battery?', 'speed?', 'temp?'];
-    var tracking_cmd = ['streamonly', 'test', 'tracking', 'detection'];
+    var tracking_cmd = ['streaming', 'test', 'tracking'];
+    var detection_cmd = ['async', 'sync', 'object_detection',
+        'age_gender_detection', 'face_detection',
+        'emotions_detection', 'head_pose_detection',
+        'facial_landmarks_detection'];
     var connect_cmd = ['command'];
     var control_cmd = ['takeoff', 'land', 'up', 'down', 'left', 'right', 'forward', 'back', 'cw', 'ccw', "flip"];
-    var flip_cmd = ['flip-x', 'flip-y', 'flip-both'];
+    var flip_cmd = ['flip'];
     var info_flg = 0;
     var url = "";
     $(function () {
@@ -65,9 +69,11 @@ $(function () {
         if (JSON.parse(command).command == "") {
             var command = JSON.stringify({ "command": $(this).find('input').val() });
         }
-        console.log(command, tracking_cmd.includes(JSON.parse(command).command))
+        //console.log(command, tracking_cmd.includes(JSON.parse(command).command))
         if (info_cmd.includes(JSON.parse(command).command)) {
             url = '/info';
+        } else if (flip_cmd.includes(JSON.parse(command).command)) {
+            url = '/flip';
         } else if (connect_cmd.includes(JSON.parse(command).command)) {
             url = '/tellooo';
         } else if (control_cmd.includes(JSON.parse(command).command) || JSON.parse(command).command.match(/flip [l,r,f,b]/)) {
@@ -76,8 +82,8 @@ $(function () {
             url = '/tellooo';
         } else if (tracking_cmd.includes(JSON.parse(command).command)) {
             url = '/tracking';
-        } else if (flip_cmd.includes(JSON.parse(command).command)) {
-            url = '/flip';
+        } else if (detection_cmd.includes(JSON.parse(command).command)) {
+            url = '/detection';
         }
         post(url, command);
     });
@@ -91,18 +97,38 @@ $(function () {
         }).done(function (data) {
             var sent_cmd = JSON.parse(command).command;
             var tello_res = JSON.parse(data.ResultSet).result;
-            var connected = JSON.parse(data.ResultSet).connected;
-            var streamon = JSON.parse(data.ResultSet).streamon;
+            var is_connected = JSON.parse(data.ResultSet).is_connected;
+            var is_streamon = JSON.parse(data.ResultSet).is_streamon;
+            var is_stream = JSON.parse(data.ResultSet).is_stream;
+            var is_test = JSON.parse(data.ResultSet).is_test;
+            var is_tracking = JSON.parse(data.ResultSet).is_tracking;
+            var is_async_mode = JSON.parse(data.ResultSet).is_async_mode;
+            var flip_code = JSON.parse(data.ResultSet).flip_code;
+            var is_obj_det = JSON.parse(data.ResultSet).is_object_detection;
+            var is_face_det = JSON.parse(data.ResultSet).is_face_detection;
+            var is_ag_det = JSON.parse(data.ResultSet).is_age_gender_detection;
+            var is_em_det = JSON.parse(data.ResultSet).is_emotions_detection;
+            var is_hp_det = JSON.parse(data.ResultSet).is_head_pose_detection;
+            var is_lm_det = JSON.parse(data.ResultSet).is_facial_landmarks_detection;
+
             //console.log(JSON.parse(data.ResultSet));
-            if (connected) {
+            if (is_connected) {
                 if (connect_cmd.includes(sent_cmd)) {
                     $("#res").text(sent_cmd + ":" + tello_res);
-                    if (!streamon) {
+                    if (!is_streamon) {
                         $('.img-fluid').attr('src', '../../static/images/tello_c.png');
                         $("#command").attr('class', 'btn btn-success');
                         $("#res").text('Click streamon!');
                     }
                 }
+                // face analytics button control
+                if (is_face_det) {
+                    $("#is_face_detection").attr("disabled", false);
+                }
+                if (!is_face_det) {
+                    $("#is_face_detection").attr("disabled", true);
+                }
+                // requst info of tello
                 if (sent_cmd == "battery?") {
                     $("#info-battery").text(sent_cmd + ":" + tello_res);
                 }
@@ -113,6 +139,27 @@ $(function () {
                 if (sent_cmd == "temp?") {
                     $("#info-temp").text(sent_cmd + ":" + tello_res);
                 }
+                // async/sync buttons contorol
+                if (is_stream || is_tracking) {
+                    $("#is_async").attr("disabled", true);
+                }
+                if (is_obj_det || is_face_det) {
+                    $("#is_async").attr("disabled", false);
+                    if (sent_cmd == 'async') {
+                        $("#async").attr('class', 'btn btn-danger btn-sm');
+                        $("#sync").attr('class', 'btn btn-secondary btn-sm');
+                    }
+                    if (sent_cmd == 'sync') {
+                        $("#async").attr('class', 'btn btn-secondary btn-sm');
+                        $("#sync").attr('class', 'btn btn-danger btn-sm');
+                    }
+                    //console.log(sent_cmd, detection_cmd.includes(sent_cmd));
+                    $("#res").text("async:" + is_async_mode + " ssd:" + is_obj_det + " face:" + is_face_det + " ag:" + is_ag_det + " em:" + is_em_det + " hp:" + is_hp_det + " lm:" + is_lm_det);
+                }
+                //if (sent_cmd == 'object_detection') {
+                //    $("#is_face_detection").attr("disabled", true);
+                //    $("#is_async").attr("disabled", false);
+                //}
                 if (control_cmd.includes(sent_cmd) || tracking_cmd.includes(sent_cmd) || sent_cmd.match(/flip [l,r,f,b]/)) {
                     $("#res").text(sent_cmd + ":" + tello_res);
                 }

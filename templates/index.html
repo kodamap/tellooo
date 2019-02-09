@@ -13,41 +13,69 @@
         <div class="row">
             <div class="col-lg-12">
                 <nav class="navbar navbar-expand-lg navbar-dark bg-dark rounded">
-                    <a class="navbar-brand" href="#">Object tracking with Tello</a>
+                    <a class="navbar-brand" href="#">Object tracking / detection with Tello</a>
                     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
                         aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                         <span class="navbar-toggler-icon"></span>
                     </button>
                     <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                        <!--
                         <ul class="navbar-nav mr-auto">
                             <li class="nav-item active">
                                 <a class="nav-link" onclick="return false;">Home <span class=" sr-only">(current)</span></a>
                             </li>
                         </ul>
-                        <form class="form-inline my-2 my-lg-0">
-                            <span class="navbar-text">
-                                <i class="fas fa-tachometer-alt" data-toggle="tooltip" data-placement="top" title="Speed of tello motion"></i>
-                                <span class="plus button rounded" id="speed-plus"><i class="fas fa-plus"></i></span>
-                                <input type="text" name="speed" id="speed" malgength="3" />
-                                <span class="min button rounded" id="speed-min"><i class="fas fa-minus"></i></span>
-                            </span>
-                            <span class="navbar-text">
-                                <i class="fas fa-helicopter" data-toggle="tooltip" data-placement="top" title="Distance per tello motion "></i>
-                                <span class="plus button rounded" id="distance-plus"><i class="fas fa-plus"></i></span>
-                                <input type="text" name="distance" id="distance" malgength="3" />
-                                <span class="min button rounded" id="distance-min"><i class="fas fa-minus"></i></span>
-                                (min:20 max:100)
-                            </span>
-                        </form>
+                    -->
                     </div>
+                    {% if is_connected %}
+                    <button type="button" class="btn btn-success" data-toggle="button" aria-pressed="false"
+                        autocomplete="off" id="command" value="command">connect</button>
+                    {% else %}
+                    <button type="button" class="btn btn-danger" data-toggle="button" aria-pressed="false" autocomplete="off"
+                        id="command" value="command">connect</button>
+                    {% endif %}
+                    <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                        {% if is_streamon %}
+                        <label id="streamon" class="btn btn-success">
+                            <input type="radio" value="streamon" autocomplete="off">streamon</label>
+                        <label id="streamoff" class="btn btn-light">
+                            <input type="radio" value="streamoff" autocomplete="off">streamoff</label>
+                        {% else %}
+                        <label id="streamon" class="btn btn-light">
+                            <input type="radio" value="streamon" autocomplete="off">streamon</label>
+                        <label id="streamoff" class="btn btn-secondary">
+                            <input type="radio" value="streamoff" autocomplete="off">streamoff</label>
+                        {% endif %}
+                    </div>
+                    {% if enable_detection %}
+                    <button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#collapseSettings"
+                        aria-expanded="false" aria-controls="collapseSettings">
+                        show settings
+                    </button>
+                    {% endif %}
+                    <form class="form-inline my-2 my-lg-0">
+                        <span class="navbar-text">
+                            <i class="fas fa-tachometer-alt" data-toggle="tooltip" data-placement="top" title="Speed of tello motion"></i>
+                            <span class="plus button rounded" id="speed-plus"><i class="fas fa-plus"></i></span>
+                            <input type="text" name="speed" id="speed" malgength="3" />
+                            <span class="min button rounded" id="speed-min"><i class="fas fa-minus"></i></span>
+                        </span>
+                        <span class="navbar-text">
+                            <i class="fas fa-helicopter" data-toggle="tooltip" data-placement="top" title="Distance per tello motion "></i>
+                            <span class="plus button rounded" id="distance-plus"><i class="fas fa-plus"></i></span>
+                            <input type="text" name="distance" id="distance" malgength="3" />
+                            <span class="min button rounded" id="distance-min"><i class="fas fa-minus"></i></span>
+                            (min:20 max:100)
+                        </span>
+                    </form>
                 </nav>
             </div>
         </div>
         <div class="row">
             <div class="col-lg-12">
-                {% if connected and streamon %}
-                <div class="text-center rounded" id="res">Reponse displayed here.</div>
-                {% elif connected %}
+                {% if is_connected and is_streamon %}
+                <div class="text-center rounded" id="res">Click takeoff!</div>
+                {% elif is_connected %}
                 <div class="text-center rounded" id="res">Click streamon!</div>
                 {% else %}
                 <div class="text-center rounded" id="res">Click connect!</div>
@@ -57,52 +85,77 @@
         <div class="row">
             <div class="col-lg-12">
                 <div class="btn-group btn-group-toggle" data-toggle="buttons">
-                    {% if connected %}
-                    <button type="button" class="btn btn-success" data-toggle="button" aria-pressed="false"
-                        autocomplete="off" id="command" value="command">connect</button>
-                    {% else %}
-                    <button type="button" class="btn btn-danger" data-toggle="button" aria-pressed="false" autocomplete="off"
-                        id="command" value="command">connect</button>
-                    {% endif %}
-                </div>
-                <div class="btn-group btn-group-toggle" data-toggle="buttons">
-                    {% if streamon %}
-                    <label id="streamon" class="btn btn-success">
-                        <input type="radio" value="streamon" autocomplete="off">streamon</label>
-                    <label id="streamoff" class="btn btn-light">
-                        <input type="radio" value="streamoff" autocomplete="off">streamoff</label>
-                    {% else %}
-                    <label id="streamon" class="btn btn-light">
-                        <input type="radio" value="streamon" autocomplete="off">streamon</label>
-                    <label id="streamoff" class="btn btn-secondary">
-                        <input type="radio" value="streamoff" autocomplete="off">streamoff</label>
-                    {% endif %}
-                </div>
-                <div class="btn-group btn-group-toggle" data-toggle="buttons">
                     <label id="takeoff" class="btn btn-warning">
                         <input type="radio" value="takeoff" autocomplete="off">takeoff</label>
                     <label id="land" class="btn btn-warning">
                         <input type="radio" value="land" autocomplete="off">land</label>
                 </div>
+                <button type="button" class="btn btn-info" data-toggle="button" aria-pressed="false" autocomplete="off"
+                    id="info-battery" value="battery?">battery: ???</button>
+                <button type="button" class="btn btn-info" data-toggle="button" aria-pressed="false" autocomplete="off"
+                    id="info-speed" value="speed?">speed: ???</button>
+                <button type="button" class="btn btn-info" data-toggle="button" aria-pressed="false" autocomplete="off"
+                    id="info-temp" value="temp?">temp: ???</button>
+                <button type="button" class="btn btn-second btn-circle btn-lg" data-toggle="tooltip" data-placement="right"
+                    aria-pressed="false" autocomplete="off" id="flip" value="flip" title="flip frame x-axis > y-axis > both > reset">
+                    <i class="fas fa-video"></i></button>
             </div>
         </div>
         <div class="row">
             <div class="col-lg-12">
                 <div class="btn-group btn-group-toggle" data-toggle="buttons">
-                    <label id="streamonly" class="btn btn-dark">
-                        <input type="radio" value="streamonly" autocomplete="off">streamonly</label>
+                    <label id="streaming" class="btn btn-dark active">
+                        <input type="radio" value="streaming" autocomplete="off">Streaming
+                    </label>
                     <label id="test" class="btn btn-dark">
-                        <input type="radio" value="test" autocomplete="off">test</label>
+                        <input type="radio" value="test" autocomplete="off">Test Mode
+                    </label>
                     <label id="tracking" class="btn btn-dark">
-                        <input type="radio" value="tracking" autocomplete="off">tracking</label>
+                        <input type="radio" value="tracking" autocomplete="off">Tracking
+                    </label>
                     {% if enable_detection %}
-                    <label id="detection" class="btn btn-dark">
-                        <input type="radio" value="detection" autocomplete="off">detection</label>
+                    <label id="object_detection" class="btn btn-dark">
+                        <input type="radio" value="object_detection" autocomplete="off">Object Detection
+                    </label>
+                    <label id="face_detection" class="btn btn-dark">
+                        <input type="radio" value="face_detection" autocomplete="off">Face Detection
+                    </label>
                     {% endif %}
                 </div>
-                <button type="button" class="btn btn-second btn-circle btn-lg" data-toggle="tooltip" data-placement="top"
-                    aria-pressed="false" autocomplete="off" id="flip-y" value="flip-y" title="flipping around y-axis">
-                    <i class="fas fa-video"></i></button>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-12">
+                {% if enable_detection and not is_face_detection %}
+                <div class="btn-group btn-group-toggle" id="is_face_detection" data-toggle="buttons" disabled="disabled">
+                    <label id="age_gender_detection" class="btn btn-dark btn-sm">
+                        <input type="checkbox" value="age_gender_detection" autocomplete="off">Age/Gender
+                    </label>
+                    <label id="emotions_detection" class="btn btn-dark btn-sm">
+                        <input type="checkbox" value="emotions_detection" autocomplete="off">Emotions
+                    </label>
+                    <label id="head_pose_detection" class="btn btn-dark btn-sm">
+                        <input type="checkbox" value="head_pose_detection" autocomplete="off">Head Pose
+                    </label>
+                    <label id="facial_landmarks_detection" class="btn btn-dark btn-sm">
+                        <input type="checkbox" value="facial_landmarks_detection" autocomplete="off">Facial
+                        Landmarks
+                    </label>
+                </div>
+                <div class="btn-group btn-group-toggle" id="is_async" data-toggle="buttons">
+                    {% if is_async_mode %}
+                    <label id="async" class="btn btn-danger btn-sm">
+                        <input type="radio" value="async" autocomplete="off">async mode</label>
+                    <label id="sync" class="btn btn-secondary btn-sm">
+                        <input type="radio" value="sync" autocomplete="off">sync mode</label>
+                    {% else %}
+                    <label id="async" class="btn btn-secondary btn-sm">
+                        <input type="radio" value="async" autocomplete="off">async mode</label>
+                    <label id="sync" class="btn btn-danger btn-sm">
+                        <input type="radio" value="sync" autocomplete="off">sync mode</label>
+                    {% endif %}
+                </div>
+                {% endif %}
             </div>
         </div>
         <div class="row">
@@ -126,43 +179,65 @@
                     aria-pressed="false" autocomplete="off" id="right" value="right" title="fly right"><i class="fas fa-arrow-right"></i></button>
             </div>
         </div>
-        <div class="row">
-            <div class="col-lg-12">
-                {% if streamon %}
-                <img class="img-fluid img-thumbnail rounded mx-auto d-block" src="{{ url_for('video_feed') }}" alt="...........">
-                {% elif connected %}
+        <div class="row justify-content-center">
+            <div class=" col-lg-4">
+                <div class="collapse" id="collapseSettings">
+                    <div class="card card-body">
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item list-group-item-primary" active><b>Using devices</b></li>
+                            <li class="list-group-item list-group-item-light"><b>MobileNet-SSD</b> {{ devices[0] }}
+                            </li>
+                            <li class="list-group-item list-group-item-light"><b>Face detection</b> {{ devices[1] }}
+                            </li>
+                            <li class="list-group-item list-group-item-light"><b>Age/Gender</b> {{ devices[2] }} </li>
+                            <li class="list-group-item list-group-item-light"><b>Emotions</b> {{ devices[3] }} </li>
+                            <li class="list-group-item list-group-item-light"><b>Head pose</b> {{ devices[4] }} </li>
+                            <li class="list-group-item list-group-item-light"><b>Landmarks</b> {{ devices[5] }} </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class=" col-lg-4">
+                {% if is_streamon %}
+                <img class="img-fluid img-thumbnail rounded mx-auto d-block" src="{{ url_for('video_feed') }}" alt="loading....">
+                {% elif is_connected %}
                 <img class="img-fluid img-thumbnail rounded mx-auto d-block" src="../../static/images/tello_c.png">
                 {% else %}
                 <img class="img-fluid img-thumbnail rounded mx-auto d-block" src="../../static/images/tello_w.png">
                 {% endif %}
+            </div>
+            <div class=" col-lg-4">
+                <div class="collapse" id="collapseSettings">
+                    <div class="card card-body">
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item list-group-item-primary" active><b>Using models</b></li>
+                            <li class="list-group-item list-group-item-light"><b>MobileNet-SSD</b> {{ models[0] }}</li>
+                            <li class="list-group-item list-group-item-light"><b>Face detection</b> {{ models[1] }}</li>
+                            <li class="list-group-item list-group-item-light"><b>Age/Gender</b> {{ models[2] }}</li>
+                            <li class="list-group-item list-group-item-light"><b>Emotions</b> {{ models[3] }}</li>
+                            <li class="list-group-item list-group-item-light"><b>Head pose</b> {{ models[4] }}</li>
+                            <li class="list-group-item list-group-item-light"><b>Landmarks</b> {{ models[5] }}</li>
+                        </ul>
+                    </div>
+                </div>
             </div>
         </div>
         <div class="row">
             <div class="col-lg-12">
                 <button type="button" class="btn btn-danger btn-circle btn-lg" data-toggle="tooltip" data-placement="left"
                     aria-pressed="false" autocomplete="off" id="flip-b" value="flip b" title="fly flip back"><i class="fas fa-backward"></i></button>
-                <button type="button" class="btn btn-danger btn-circle btn-lg" data-toggle="tooltip" data-placement="top"
+                <button type="button" class="btn btn-danger btn-circle btn-lg" data-toggle="tooltip" data-placement="bottom"
                     aria-pressed="false" autocomplete="off" id="flip-f" value="flip f" title="fly flip forward"><i
                         class="fas fa-forward"></i></button>
-                <button type="button" class="btn btn-danger btn-circle btn-lg" data-toggle="tooltip" data-placement="top"
-                    aria-pressed="false" autocomplete="off" id="flip-r" value="flip r" title="fly flip right"><i class="fas fa-arrow-left"></i></button>
+                <button type="button" class="btn btn-danger btn-circle btn-lg" data-toggle="tooltip" data-placement="bottom"
+                    aria-pressed="false" autocomplete="off" id="flip-l" value="flip l" title="fly flip left"><i class="fas fa-arrow-left"></i></button>
                 <button type="button" class="btn btn-danger btn-circle btn-lg" data-toggle="tooltip" data-placement="right"
-                    aria-pressed="false" autocomplete="off" id="flip-l" value="flip l" title="fly flip left"><i class="fas fa-arrow-right"></i></button>
+                    aria-pressed="false" autocomplete="off" id="flip-r" value="flip r" title="fly flip right"><i class="fas fa-arrow-right"></i></button>
             </div>
         </div>
         <div class="row">
             <div class="col-lg-12">
                 <i class="fas fa-exclamation-triangle"></i>Flip motion: Fly with caution!
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-lg-12">
-                <button type="button" class="btn btn-dark" data-toggle="button" aria-pressed="false" autocomplete="off"
-                    id="info-battery" value="battery?">battery?</button>
-                <button type="button" class="btn btn-dark" data-toggle="button" aria-pressed="false" autocomplete="off"
-                    id="info-speed" value="speed?">speed?</button>
-                <button type="button" class="btn btn-dark" data-toggle="button" aria-pressed="false" autocomplete="off"
-                    id="info-temp" value="temp?">temp?</button>
             </div>
         </div>
     </div>

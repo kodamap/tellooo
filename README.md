@@ -10,9 +10,9 @@ You can do followings:
 * Change tracking mode (streamonly, test, tracking).
 * Object detection (OpenVINO environment is required)
 
-browser demo (YouTube Link)
+Face detection demo (YouTube Link)
 
-[![](https://img.youtube.com/vi/JhoCNQa-FGc/0.jpg)](https://www.youtube.com/watch?v=JhoCNQa-FGc)
+[![](https://img.youtube.com/vi/I6-YKfPHo_g/0.jpg)](https://www.youtube.com/watch?v=I6-YKfPHo_g)
 
 
 Color tracking (YouTube Link)
@@ -41,7 +41,7 @@ https://github.com/ECI-Robotics/opencv_remote_streaming_processing/
 * Flask 0.12.2
 * opencv-python 3.4.3.18
 * Chrome / Firefox
-* OpenVINO Toolkit R4/R5 (Required only when object detection is enanbled )
+* OpenVINO Toolkit R4/R5 (Required only when object/face detection is enanbled )
 
 ## Required Packages
 
@@ -64,24 +64,70 @@ Command Option
 
 ```sh
 $ python app.py -h
-usage: app.py [-h] [-a {camshift,meanshift}] [-s] [-t]
-              [-c {blue,red,yellow,green}]
-
-opencv object tracking with tello
+usage: app.py [-h] [-a {camshift,meanshift}] [-t] [-tr]
+              [-c {blue,skyblue,red,yellow,green}] [--enable_detection]
+              [-m_ss MODEL_SSD] [-m_fc MODEL_FACE] [-m_ag MODEL_AGE_GENDER]
+              [-m_em MODEL_EMOTIONS] [-m_hp MODEL_HEAD_POSE]
+              [-m_lm MODEL_FACIAL_LANDMARKS] [-l CPU_EXTENSION]
+              [-d {CPU,GPU,FPGA,MYRIAD}] [-d_ag {CPU,GPU,FPGA,MYRIAD}]
+              [-d_em {CPU,GPU,FPGA,MYRIAD}] [-d_hp {CPU,GPU,FPGA,MYRIAD}]
+              [-d_lm {CPU,GPU,FPGA,MYRIAD}] [-pp PLUGIN_DIR] [--labels LABELS]
+              [-pt PROB_THRESHOLD] [-ptf PROB_THRESHOLD_FACE]
 
 optional arguments:
   -h, --help            show this help message and exit
   -a {camshift,meanshift}, --algorithm {camshift,meanshift}
                         selct object tracking algorithm
-  -s, --stream_only     stream mode (without object traking)
-  -t, --test            test mode (without moving arms)
-  -c {blue,red,yellow,green}, --color {blue,red,yellow,green}
+  -t, --test            test mode (without tracking motion)
+  -tr, --tracking       test mode (without tracking motion)
+  -c {blue,skyblue,red,yellow,green}, --color {blue,skyblue,red,yellow,green}
                         select tracking color in color.ini
-  -d DEVICE, --device DEVICE
-                        Specify the target device to infer on; CPU, GPU, FPGA
-                        or MYRIAD is acceptable. Demo will look for a suitable
-                        plugin for device specified (CPU by default)
   --enable_detection    enable object detection using MobileNet-SSD
+  -m_ss MODEL_SSD, --model_ssd MODEL_SSD
+                        Required. Path to an .xml file with a trained
+                        MobileNet-SSD model.
+  -m_fc MODEL_FACE, --model_face MODEL_FACE
+                        Optional. Path to an .xml file with a trained
+                        Age/Gender Recognition model.
+  -m_ag MODEL_AGE_GENDER, --model_age_gender MODEL_AGE_GENDER
+                        Optional. Path to an .xml file with a trained
+                        Age/Gender Recognition model.
+  -m_em MODEL_EMOTIONS, --model_emotions MODEL_EMOTIONS
+                        Optional. Path to an .xml file with a trained Emotions
+                        Recognition model.
+  -m_hp MODEL_HEAD_POSE, --model_head_pose MODEL_HEAD_POSE
+                        Optional. Path to an .xml file with a trained Head
+                        Pose Estimation model.
+  -m_lm MODEL_FACIAL_LANDMARKS, --model_facial_landmarks MODEL_FACIAL_LANDMARKS
+                        Optional. Path to an .xml file with a trained Facial
+                        Landmarks Estimation model.
+  -l CPU_EXTENSION, --cpu_extension CPU_EXTENSION
+                        MKLDNN (CPU)-targeted custom layers.Absolute path to a
+                        shared library with the kernels impl.
+  -d {CPU,GPU,FPGA,MYRIAD}, --device {CPU,GPU,FPGA,MYRIAD}
+                        Specify the target device for MobileNet-SSSD / Face
+                        Detection to infer on; CPU, GPU, FPGA or MYRIAD is
+                        acceptable.
+  -d_ag {CPU,GPU,FPGA,MYRIAD}, --device_age_gender {CPU,GPU,FPGA,MYRIAD}
+                        Specify the target device for Age/Gender Recognition
+                        to infer on; CPU, GPU, FPGA or MYRIAD is acceptable.
+  -d_em {CPU,GPU,FPGA,MYRIAD}, --device_emotions {CPU,GPU,FPGA,MYRIAD}
+                        Specify the target device for for Emotions Recognition
+                        to infer on; CPU, GPU, FPGA or MYRIAD is acceptable.
+  -d_hp {CPU,GPU,FPGA,MYRIAD}, --device_head_pose {CPU,GPU,FPGA,MYRIAD}
+                        Specify the target device for Head Pose Estimation to
+                        infer on; CPU, GPU, FPGA or MYRIAD is acceptable.
+  -d_lm {CPU,GPU,FPGA,MYRIAD}, --device_facial_landmarks {CPU,GPU,FPGA,MYRIAD}
+                        Specify the target device for Facial Landmarks
+                        Estimation to infer on; CPU, GPU, FPGA or MYRIAD is
+                        acceptable.
+  -pp PLUGIN_DIR, --plugin_dir PLUGIN_DIR
+                        Path to a plugin folder
+  --labels LABELS       Labels mapping file
+  -pt PROB_THRESHOLD, --prob_threshold PROB_THRESHOLD
+                        Probability threshold for object detections filtering
+  -ptf PROB_THRESHOLD_FACE, --prob_threshold_face PROB_THRESHOLD_FACE
+                        Probability threshold for face detections filtering
 ```
 
 ### Object tracking settings (parameters in Tello.cfg)
@@ -90,10 +136,10 @@ optional arguments:
 
 ```sh
 [camera]
-# deifne frame resolution and frame rate.
+# deifne resize property of frame.
 # (480 * 360  is recommend)
 # Note: This is resize prameter of frames. OpenCV VideoCapture with udp streaming can not set cv2.CAP_PROP_XX.
-frame_prop = (480, 360)
+resize_prop = (480, 360)
 .
 .
 ```
@@ -170,13 +216,13 @@ You can test Object deteciton using MobileNet-SSD (detection button). Detection 
 * Install Intel® Distribution of OpenVINO™ toolkit for Windows* 10
 https://software.intel.com/en-us/articles/OpenVINO-Install-Windows
 
-* To download IR files and cpu extension dll from google drive.
-URL: https://drive.google.com/open?id=18e4fhpPCBrJR-MVpAGcx-3NtFxWTcEGk
+* URL: https://drive.google.com/open?id=1YKbwy9W0MZObls9dy_0n90MQoRq0RdOB
   * File extension.zip
-  * Size: 32,084,489 byte
-  * MD5 hash : 8e46de84d6ee0b61ff9224e7087e01e7
+  * Size: 32,084,333 byte
+  * MD5 hash : 31d7c77ade31fd1cb9cca6c9a92128f3
 
-* Extract extension.zip and store extension folder under tellooo(file lists)
+* Extract extension.zip and store extension folder under the "tellooo"
+
 ```sh
 extension/cpu_extension.dll
 extension/IR/MobileNetSSD_FP16/MobileNetSSD_deploy.bin
@@ -185,6 +231,18 @@ extension/IR/MobileNetSSD_FP16/MobileNetSSD_deploy.xml
 extension/IR/MobileNetSSD_FP32/MobileNetSSD_deploy.bin
 extension/IR/MobileNetSSD_FP32/MobileNetSSD_deploy.mapping
 extension/IR/MobileNetSSD_FP32/MobileNetSSD_deploy.xml
+```
+
+3. Download Face detection models IR files
+
+```sh
+cd extension/IR/
+models="face-detection-retail-0004 age-gender-recognition-retail-0013 emotions-recognition-retail-0003 head-pose-estimation-adas-0001 landmarks-regression-retail-0009"
+for model in $models
+do
+wget --no-check-certificate https://download.01.org/openvinotoolkit/2018_R5/open_model_zoo/${model}/FP16/${model}.xml
+wget --no-check-certificate https://download.01.org/openvinotoolkit/2018_R5/open_model_zoo/${model}/FP16/${model}.bin
+done
 ```
 
 ### Run App

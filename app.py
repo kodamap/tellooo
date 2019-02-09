@@ -10,15 +10,18 @@
 ###############################################################################
 
 from flask import Flask, Response, render_template, request, jsonify
-from camera import VideoCamera
+from lib.camera import VideoCamera
 import argparse
 import configparser
 import socket
 import json
+import sys
 import threading
 import re
 from time import sleep
 from logging import getLogger, basicConfig, DEBUG, INFO
+from lib.args import build_argparser
+from lib import interactive_detection
 
 app = Flask(__name__)
 
@@ -36,11 +39,55 @@ basicConfig(
     level=INFO,
     format="%(asctime)s %(levelname)s %(name)s %(funcName)s(): %(message)s")
 
-streamon, connected, detection = False, False, False
 distance = 20
-
-tello_response = ""
 move_command = ("up", "down", "left", "right", "back", "forward", "cw", "ccw")
+
+is_connected = False
+is_streamon = False
+is_stream = True
+is_tracking = False
+is_test = False
+is_async_mode = True
+is_object_detection = False
+is_face_detection = False
+is_age_gender_detection = False
+is_emotions_detection = False
+is_head_pose_detection = False
+is_facial_landmarks_detection = False
+flip_code = None  # filpcode: 0,x-axis 1,y-axis -1,both axis
+tello_response = ""
+devices = None
+models = None
+detections = None
+
+
+def send_info(command, tello_response):
+    result = {
+        "command": command,
+        "result": tello_response,
+        "is_connected": is_connected,
+        "is_streamon": is_streamon,
+        "is_stream": is_stream,
+        "is_tracking": is_tracking,
+        "is_test": is_test,
+        "is_async_mode": is_async_mode,
+        "flip_code": flip_code,
+        "is_object_detection": is_object_detection,
+        "is_face_detection": is_face_detection,
+        "is_age_gender_detection": is_age_gender_detection,
+        "is_emotions_detection": is_emotions_detection,
+        "is_head_pose_detection": is_head_pose_detection,
+        "is_facial_landmarks_detection": is_facial_landmarks_detection
+    }
+    logger.info(
+        "cmd:{} res:{} con:{} streamon:{} stream:{} tracking:{} test:{} \
+        ssd:{} face:{} ag:{} em:{} hp:{} lm:{} async:{} flip:{}"
+        .format(command, tello_response, is_connected, is_streamon, is_stream,
+                is_tracking, is_test, is_object_detection, is_face_detection,
+                is_age_gender_detection, is_emotions_detection,
+                is_head_pose_detection, is_facial_landmarks_detection,
+                is_async_mode, flip_code))
+    return result
 
 
 def send_command(command):
@@ -52,72 +99,49 @@ def send_command(command):
 
 def gen(camera):
     while True:
-        frame = camera.get_frame(stream_only, is_test, speed, detection,
-                                 is_flip)
+        frame = camera.get_frame(is_stream, is_tracking, is_test, speed,
+                                 is_async_mode, flip_code, is_object_detection,
+                                 is_face_detection, is_age_gender_detection,
+                                 is_emotions_detection, is_head_pose_detection,
+                                 is_facial_landmarks_detection)
         yield (b'--frame\r\n'
                b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n\r\n')
 
 
 @app.route('/')
 def index():
-    global connected
-    global streamon
+    global is_connected
+    global is_streamon
 
-    logger.info("connected:{} streamon:{}".format(connected, streamon))
+    logger.info(
+        "is_connected:{} is_streamon:{}".format(is_connected, is_streamon))
     return render_template(
         'index.html',
-        streamon=streamon,
-        connected=connected,
+        is_streamon=is_streamon,
+        is_connected=is_connected,
+        is_async_mode=is_async_mode,
+        devices=devices,
+        models=models,
         enable_detection=enable_detection)
 
 
 @app.route('/video_feed')
 def video_feed():
-    camera = VideoCamera(s, algorithm, target_color, stream_only, is_test,
-                         speed, device, enable_detection)
+    camera = VideoCamera(s, algorithm, target_color, is_stream, is_test, speed,
+                         detections)
     return Response(
         gen(camera), mimetype='multipart/x-mixed-replace; boundary=frame')
 
 
-@app.route('/tracking', methods=['POST'])
-def tracking():
-    global connected
-    global streamon
-    global stream_only
-    global is_test
-    global detection
-    tello_response = ""
-    command = request.json['command']
-    if command == "streamonly":
-        stream_only, is_test, detection = True, False, False
-    elif command == "tracking":
-        stream_only, is_test, detection = False, False, False
-    elif command == "test":
-        stream_only, is_test, detection = False, True, False
-    elif command == "detection":
-        stream_only, is_test, detection = False, False, True
-    result = {
-        "command": command,
-        "result": tello_response,
-        "connected": connected,
-        "streamon": streamon,
-        "detection": detection
-    }
-    logger.info(
-        "sent:{} res:{} con:{} stream:{} detection:{} is_filp_y: {}".format(
-            command, tello_response, connected, streamon, detection, is_flip))
-    return jsonify(ResultSet=json.dumps(result))
-
-
 @app.route('/tellooo', methods=['POST'])
 def tellooo():
-    global connected
-    global streamon
-    global tello_response
+    global is_connected
+    global is_streamon
     global speed
     global distance
-    tello_response = ""
+
     command = request.json['command']
+
     if command in move_command:
         command = command + " " + str(distance)
     if re.search(r'speed \d+', command):
@@ -128,114 +152,167 @@ def tellooo():
         distance = int(command.split(" ")[1])
     if re.search(r'flip [l,r,f,b]', command):
         command = re.search(r'flip [l,r,f,b]', command).group(0)
+
     send_command(command)
+
     if command == 'command' and tello_response == 'ok':
-        connected = True
+        is_connected = True
     if command == 'streamon' and tello_response == 'ok':
-        streamon = True
+        is_streamon = True
     if command == 'streamoff' and tello_response == 'ok':
-        streamon = False
-    result = {
-        "command": command,
-        "result": tello_response,
-        "connected": connected,
-        "streamon": streamon
-    }
-    logger.info(
-        "sent:{} res:{} con:{} stream:{} detection:{} is_filp_y: {}".format(
-            command, tello_response, connected, streamon, detection, is_flip))
+        is_streamon = False
+
+    result = send_info(command, tello_response)
+
     return jsonify(ResultSet=json.dumps(result))
 
 
 @app.route('/info', methods=['POST'])
 def info():
-    global connected
-    global streamon
-    global tello_response
-    tello_response = ""
     command = request.json['command']
     send_command(command)
-    result = {
-        "command": command,
-        "result": tello_response,
-        "connected": connected,
-        "streamon": streamon
-    }
-    logger.info(
-        "sent:{} res:{} con:{} stream:{} detection:{} is_filp_y: {}".format(
-            command, tello_response, connected, streamon, detection, is_flip))
+    result = send_info(command, tello_response)
     return jsonify(ResultSet=json.dumps(result))
 
 
 @app.route('/flip', methods=['POST'])
 def flip():
-    global is_flip
+    global flip_code
     command = request.json['command']
-    if command == "flip-y":
-        is_flip = not is_flip
-    result = {
-        "command": command,
-        "result": tello_response,
-        "connected": connected,
-        "streamon": streamon,
-        "is_flip": is_flip
-    }
-    logger.info(
-        "sent:{} res:{} con:{} stream:{} detection:{} is_filp_y: {}".format(
-            command, tello_response, connected, streamon, detection, is_flip))
+
+    if command == "flip" and flip_code is None:
+        flip_code = 0
+        tello_response = "around x-axis"
+    elif command == "flip" and flip_code == 0:
+        flip_code = 1
+        tello_response = "around y-axis"
+    elif command == "flip" and flip_code == 1:
+        flip_code = -1
+        tello_response = "around both-axis"
+    elif command == "flip" and flip_code == -1:
+        flip_code = None
+        tello_response = "reset"
+
+    result = send_info(command, tello_response)
+    return jsonify(ResultSet=json.dumps(result))
+
+
+@app.route('/tracking', methods=['POST'])
+def tracking():
+    global is_stream
+    global is_test
+    global is_tracking
+    global is_object_detection
+    global is_face_detection
+
+    tello_response = "on"
+    command = request.json['command']
+
+    if command == "streaming":
+        is_stream = True
+        is_tracking = False
+        is_test = False
+        is_object_detection = False
+        is_face_detection = False
+    elif command == "tracking":
+        is_stream = False
+        is_tracking = True
+        is_test = False
+        is_object_detection = False
+        is_face_detection = False
+    elif command == "test":
+        is_stream = False
+        is_tracking = True
+        is_test = True
+        is_object_detection = False
+        is_face_detection = False
+
+    result = send_info(command, tello_response)
+    return jsonify(ResultSet=json.dumps(result))
+
+
+@app.route('/detection', methods=['POST'])
+def detection():
+    global is_async_mode
+    global is_stream
+    global is_tracking
+    global is_test
+    global is_object_detection
+    global is_face_detection
+    global is_age_gender_detection
+    global is_emotions_detection
+    global is_head_pose_detection
+    global is_facial_landmarks_detection
+
+    tello_response = "on"
+    command = request.json['command']
+
+    if is_object_detection or is_face_detection:
+        if command == "async":
+            is_async_mode = True
+        elif command == "sync":
+            is_async_mode = False
+
+    if command == "object_detection":
+        is_stream = False
+        is_tracking = False
+        is_test = False
+        is_object_detection = True
+        is_face_detection = False
+    if command == "face_detection":
+        is_stream = False
+        is_tracking = False
+        is_test = False
+        is_object_detection = False
+        is_face_detection = True
+
+    if is_face_detection:
+        if command == "age_gender_detection":
+            is_age_gender_detection = not is_age_gender_detection
+        if command == "emotions_detection":
+            is_emotions_detection = not is_emotions_detection
+        if command == "head_pose_detection":
+            is_head_pose_detection = not is_head_pose_detection
+        if command == "facial_landmarks_detection":
+            is_facial_landmarks_detection = not is_facial_landmarks_detection
+
+    result = send_info(command, tello_response)
     return jsonify(ResultSet=json.dumps(result))
 
 
 if __name__ == '__main__':
 
-    parser = argparse.ArgumentParser(
-        description='opencv object tracking with tello')
-    parser.add_argument(
-        '-a',
-        '--algorithm',
-        help='selct object tracking algorithm',
-        default='camshift',
-        choices=['camshift', 'meanshift'])
-    parser.add_argument(
-        '-s',
-        '--stream_only',
-        help='stream mode (without object traking)',
-        action='store_true')
-    parser.add_argument(
-        '-t',
-        '--test',
-        help='test mode (without moving arms)',
-        action='store_true')
-    parser.add_argument(
-        '-c',
-        '--color',
-        help='select tracking color in color.ini',
-        default='',
-        choices=colors)
-    parser.add_argument(
-        "-d",
-        "--device",
-        help="Specify the target device to infer on; CPU, GPU, FPGA or MYRIAD is acceptable. Demo "
-        "will look for a suitable plugin for device specified (CPU by default)",
-        default="CPU",
-        type=str)
-    parser.add_argument(
-        '--enable_detection',
-        help='enable object detection using MobileNet-SSD',
-        action='store_true')
-    args = parser.parse_args()
+    args = build_argparser().parse_args()
 
     algorithm = args.algorithm
     target_color = args.color
-    stream_only = args.stream_only
     is_test = args.test
-    device = args.device
     enable_detection = args.enable_detection
-    if flip_code == 1:
-        is_flip = True
-    else:
-        is_flip = False
-    """ Create a UDP socket to send and receive message with tello """
+
+    if enable_detection:
+        devices = [
+            args.device, args.device, args.device_age_gender,
+            args.device_emotions, args.device_head_pose,
+            args.device_facial_landmarks
+        ]
+        models = [
+            args.model_ssd, args.model_face, args.model_age_gender,
+            args.model_emotions, args.model_head_pose,
+            args.model_facial_landmarks
+        ]
+        if "CPU" in devices and args.cpu_extension is None:
+            print(
+                "\nPlease try to specify cpu extensions library path in demo's command line parameters using -l "
+                "or --cpu_extension command line argument")
+            sys.exit(1)
+
+        # Create detectors class instance
+        detections = interactive_detection.Detections(
+            devices, models, args.cpu_extension, args.plugin_dir,
+            args.prob_threshold, args.prob_threshold_face, is_async_mode)
+        models = detections.models  # Get models to display WebUI.
+
+    # Create a UDP socket to send and receive message with tello
     with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
         host = '0.0.0.0'
         port = 9000
