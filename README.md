@@ -12,7 +12,9 @@ You can do followings:
 
 Face detection demo (YouTube Link)
 
-[![](https://img.youtube.com/vi/I6-YKfPHo_g/0.jpg)](https://www.youtube.com/watch?v=I6-YKfPHo_g)
+<a href="https://www.youtube.com/watch?v=I6-YKfPHo_g">
+<img src="https://qiita-image-store.s3.amazonaws.com/0/118309/23658392-1e07-ee3f-d51c-f34c7617bb7f.gif" alt="face detection" style="width:80%;height:auto;" ></a>
+
 
 
 Color tracking (YouTube Link)
@@ -189,7 +191,7 @@ http://127.0.0.1:5000/
 5. connet to Tello (click the connect button)
 
 <a href="https://raw.githubusercontent.com/wiki/kodamap/tellooo/images/color_tracking.jpg">
-<img src="https://raw.githubusercontent.com/wiki/kodamap/tellooo/images/color_tracking.jpg" alt="pooh" style="width:auto;height:auto;" ></a>
+<img src="https://raw.githubusercontent.com/wiki/kodamap/tellooo/images/color_tracking.jpg" alt="pooh" width="auto" height="auto"></a>
 
 Note: 
 * if you can not connect to Tello (no response:ok ) , make sure to connect Tello's network and try to restart app (Stop(Ctrl + C) , then run app again).
