@@ -51,12 +51,6 @@ class VideoCamera(object):
                   flip_code, is_object_detection, is_face_detection,
                   is_age_gender_detection, is_emotions_detection,
                   is_head_pose_detection, is_facial_landmarks_detection):
-        """
-        ret, frame = self.cap.read()
-        if flip_code is not None:
-            frame = cv2.flip(frame, flip_code)
-        frame = cv2.resize(frame, frame_prop)
-        """
 
         if is_stream or is_tracking:
             ret, frame = self.cap.read()
@@ -67,11 +61,6 @@ class VideoCamera(object):
                                                   speed)
 
         if is_object_detection or is_face_detection:
-            """
-            next_frame = frame
-            if not is_async_mode:
-                self.frame = frame
-            """
             if is_async_mode:
                 ret, next_frame = self.cap.read()
                 next_frame = cv2.resize(next_frame, resize_prop)

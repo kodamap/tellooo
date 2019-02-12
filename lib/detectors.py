@@ -143,40 +143,6 @@ class BaseDetection(object):
         else:
             return False
 
-    def start_async(self, input_dims, frame, next_frame, cur_request_id,
-                    next_request_id, is_async_mode):
-        is_requests_finished = False
-        n, c, h, w = input_dims
-        # Main sync point:
-        # in the truly Async mode we start the NEXT infer request, while waiting for the CURRENT to complete
-        # in the regular mode we start the CURRENT request and immediately wait for it's completion
-        inf_start = timer()
-        if is_async_mode:
-            in_frame = cv2.resize(next_frame, (w, h))
-            in_frame = in_frame.transpose(
-                (2, 0, 1))  # Change data layout from HWC to CHW
-            in_frame = in_frame.reshape((n, c, h, w))
-            self.exec_net.start_async(
-                request_id=self.next_request_id,
-                inputs={self.input_blob: in_frame})
-        else:
-            res = self.exec_net.requests[self.cur_request_id].wait(-1)
-            # -11: no requests exist with cur_request_id
-            if res == -11 or res == 0:
-                in_frame = cv2.resize(frame, (w, h))
-                in_frame = in_frame.transpose(
-                    (2, 0, 1))  # Change data layout from HWC to CHW
-                in_frame = in_frame.reshape((n, c, h, w))
-                self.exec_net.start_async(
-                    request_id=self.cur_request_id,
-                    inputs={self.input_blob: in_frame})
-        if self.exec_net.requests[self.cur_request_id].wait(-1) == 0:
-            inf_end = timer()
-            det_time = inf_end - inf_start
-            is_requests_finished = True
-
-        return det_time, is_requests_finished
-
 
 class FaceDetection(BaseDetection):
     def __init__(self, device, model_xml, cpu_extension, plugin_dir,
@@ -189,29 +155,6 @@ class FaceDetection(BaseDetection):
         del self.net
         self.cur_request_id = 0
         self.next_request_id = 1
-
-    def face_inference(self, frame, next_frame, is_async_mode):
-        """
-        The net outputs a blob with shape: [1, 1, N, 7], where N is the number of detected bounding boxes.
-        For each detection, the description has the format: [image_id, label, conf, x_min, y_min, x_max, y_max]
-        """
-
-        faces = None
-
-        det_time, is_requests_finished = self.start_async(
-            self.input_dims, frame, next_frame, self.cur_request_id,
-            self.next_request_id, is_async_mode)
-        if is_requests_finished:
-            res = self.exec_net.requests[self.cur_request_id].outputs[
-                self.out_blob]  # res's shape: [1, 1, 200, 7]
-            # Get rows whose confidence is larger than prob_threshold.
-            # detected faces are also used by age/gender, emotion, landmark, head pose detection.
-            faces = res[0][:, np.where(res[0][0][:, 2] >
-                                       self.prob_threshold_face)]
-        if is_async_mode:
-            self.cur_request_id, self.next_request_id = self.next_request_id, self.cur_request_id
-
-        return det_time, faces
 
     def get_results(self, is_async_mode):
         """
@@ -245,31 +188,6 @@ class AgeGenderDetection(BaseDetection):
         self.cur_request_id = 0
         self.next_request_id = 1
 
-    def age_gender_inference(self, face_frame, next_face_frame, is_async_mode):
-        """
-        Output layer names in Inference Engine format:
-         "age_conv3", shape: [1, 1, 1, 1] - Estimated age divided by 100.
-         "prob", shape: [1, 2, 1, 1] - Softmax output across 2 type classes [female, male]
-        """
-
-        age = 0
-        gender = ""
-
-        det_time, is_requests_finished = self.start_async(
-            self.input_dims, face_frame, next_face_frame, self.cur_request_id,
-            self.next_request_id, is_async_mode)
-        if is_requests_finished:
-            age = self.exec_net.requests[self.cur_request_id].outputs[
-                'age_conv3']
-            prob = self.exec_net.requests[self.cur_request_id].outputs['prob']
-            age = age[0][0][0][0] * 100
-            gender = self.label[np.argmax(prob[0])]
-
-        if is_async_mode:
-            self.cur_request_id, self.next_request_id = self.next_request_id, self.cur_request_id
-
-        return det_time, age, gender
-
     def get_results(self, is_async_mode):
         """
         Output layer names in Inference Engine format:
@@ -300,28 +218,6 @@ class EmotionsDetection(BaseDetection):
         self.cur_request_id = 0
         self.next_request_id = 1
 
-    def emotions_inference(self, face_frame, next_face_frame, is_async_mode):
-        """
-        Output layer names in Inference Engine format:
-         "prob_emotion", shape: [1, 5, 1, 1]
-         - Softmax output across five emotions ('neutral', 'happy', 'sad', 'surprise', 'anger').
-        """
-
-        emotion = ""
-
-        det_time, is_requests_finished = self.start_async(
-            self.input_dims, face_frame, next_face_frame, self.cur_request_id,
-            self.next_request_id, is_async_mode)
-        if is_requests_finished:
-            res = self.exec_net.requests[self.cur_request_id].outputs[
-                self.out_blob]
-            emotion = self.label[np.argmax(res[0])]
-
-        if is_async_mode:
-            self.cur_request_id, self.next_request_id = self.next_request_id, self.cur_request_id
-
-        return det_time, emotion
-
     def get_results(self, is_async_mode):
         """
         Output layer names in Inference Engine format:
@@ -349,35 +245,6 @@ class HeadPoseDetection(BaseDetection):
         del self.net
         self.cur_request_id = 0
         self.next_request_id = 1
-
-    def headpose_inference(self, face_frame, next_face_frame, is_async_mode):
-        """
-        Output layer names in Inference Engine format:
-         "angle_y_fc", shape: [1, 1] - Estimated yaw (in degrees).
-         "angle_p_fc", shape: [1, 1] - Estimated pitch (in degrees).
-         "angle_r_fc", shape: [1, 1] - Estimated roll (in degrees).
-        Each output contains one float value that represents value in Tait-Bryan angles (yaw, pitсh or roll).
-        """
-
-        yaw = .0  # Axis of rotation: z
-        pitch = .0  # Axis of rotation: y
-        roll = .0  # Axis of rotation: x
-
-        det_time, is_requests_finished = self.start_async(
-            self.input_dims, face_frame, next_face_frame, self.cur_request_id,
-            self.next_request_id, is_async_mode)
-        if is_requests_finished:
-            yaw = self.exec_net.requests[self.cur_request_id].outputs[
-                'angle_y_fc'][0][0]
-            pitch = self.exec_net.requests[self.cur_request_id].outputs[
-                'angle_p_fc'][0][0]
-            roll = self.exec_net.requests[self.cur_request_id].outputs[
-                'angle_r_fc'][0][0]
-
-        if is_async_mode:
-            self.cur_request_id, self.next_request_id = self.next_request_id, self.cur_request_id
-
-        return det_time, yaw, pitch, roll
 
     def get_results(self, is_async_mode):
         """
@@ -415,40 +282,6 @@ class FacialLandmarksDetection(BaseDetection):
         del self.net
         self.cur_request_id = 0
         self.next_request_id = 1
-
-    def facial_landmarks_inference(self, face_frame, next_face_frame,
-                                   is_async_mode):
-        """
-        # Output layer names in Inference Engine format:
-        # landmarks-regression-retail-0009:
-        #   "95", [1, 10, 1, 1], containing a row-vector of 10 floating point values for five landmarks
-        #         coordinates in the form (x0, y0, x1, y1, ..., x5, y5).
-        #         All the coordinates are normalized to be in range [0,1]
-        # facial-landmarks-35-adas-0001:
-        #   "align_fc3", [1,70], the shape: [1, 70], containing row-vector of 70 floating point values for 35 landmarks'
-        #    normed coordinates in the form (x0, y0, x1, y1, ..., x34, y34).
-        """
-
-        normed_landmarks = None
-
-        det_time, is_requests_finished = self.start_async(
-            self.input_dims, face_frame, next_face_frame, self.cur_request_id,
-            self.next_request_id, is_async_mode)
-        if is_requests_finished:
-            if self.output_dims == [1, 10, 1, 1]:
-                # for landmarks-regression_retail-0009
-                normed_landmarks = self.exec_net.requests[
-                    self.cur_request_id].outputs[self.out_blob].reshape(1,
-                                                                        10)[0]
-            else:
-                # for facial-landmarks-35-adas-0001
-                normed_landmarks = self.exec_net.requests[
-                    self.cur_request_id].outputs[self.out_blob][0]
-
-        if is_async_mode:
-            self.cur_request_id, self.next_request_id = self.next_request_id, self.cur_request_id
-
-        return det_time, normed_landmarks
 
     def get_results(self, is_async_mode):
         """

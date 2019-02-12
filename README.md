@@ -8,7 +8,9 @@ You can do followings:
 * Video streaming from Tello on your browser.
 * Object / Color Tracking.
 * Change tracking mode (streamonly, test, tracking).
-* Object detection (OpenVINO environment is required)
+* Object Detection(MobileNet-SSD)
+* Face Detection and Face analytics (Age/Gender, Emotion, Head Pose, Facial Landmarks)
+**Note: Object Detection and Face Detectin/analutics require OpenVINO environment**
 
 Face detection demo (YouTube Link)
 
@@ -139,8 +141,8 @@ optional arguments:
 ```sh
 [camera]
 # deifne resize property of frame.
-# (480 * 360  is recommend)
-# Note: This is resize prameter of frames. OpenCV VideoCapture with udp streaming can not set cv2.CAP_PROP_XX.
+# (480 * 360  is recommended)
+# Note: This is resize parameter of frames. OpenCV VideoCapture with udp streaming can not set cv2.CAP_PROP_XX.
 resize_prop = (480, 360)
 .
 .

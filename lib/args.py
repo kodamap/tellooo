@@ -93,7 +93,7 @@ def build_argparser():
     parser.add_argument(
         "-d_em",
         "--device_emotions",
-        help="Specify the target device for for Emotions Recognition to infer on; CPU, GPU, FPGA or MYRIAD is acceptable.",
+        help="Specify the target device for Emotions Recognition to infer on; CPU, GPU, FPGA or MYRIAD is acceptable.",
         default="CPU",
         choices=['CPU', 'GPU', 'FPGA', 'MYRIAD'],
         type=str)
