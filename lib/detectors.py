@@ -194,6 +194,7 @@ class AgeGenderDetection(BaseDetection):
          "age_conv3", shape: [1, 1, 1, 1] - Estimated age divided by 100.
          "prob", shape: [1, 2, 1, 1] - Softmax output across 2 type classes [female, male]
         """
+
         age = 0
         gender = ""
         logger.debug("*** get_results start *** cur_request_id:{}".format(
@@ -202,8 +203,10 @@ class AgeGenderDetection(BaseDetection):
         prob = self.exec_net.requests[self.cur_request_id].outputs['prob']
         age = age[0][0][0][0] * 100
         gender = self.label[np.argmax(prob[0])]
+
         if is_async_mode:
             self.cur_request_id, self.next_request_id = self.next_request_id, self.cur_request_id
+
         return age, gender
 
 
@@ -252,7 +255,7 @@ class HeadPoseDetection(BaseDetection):
          "angle_y_fc", shape: [1, 1] - Estimated yaw (in degrees).
          "angle_p_fc", shape: [1, 1] - Estimated pitch (in degrees).
          "angle_r_fc", shape: [1, 1] - Estimated roll (in degrees).
-        Each output contains one float value that represents value in 
+        Each output contains one float value that represents value in
         Tait-Bryan angles (yaw, pitсh or roll).
         """
 
@@ -285,14 +288,14 @@ class FacialLandmarksDetection(BaseDetection):
 
     def get_results(self, is_async_mode):
         """
-        # Output layer names in Inference Engine format:
-        # landmarks-regression-retail-0009:
-        #   "95", [1, 10, 1, 1], containing a row-vector of 10 floating point values for five landmarks
-        #         coordinates in the form (x0, y0, x1, y1, ..., x5, y5).
-        #         All the coordinates are normalized to be in range [0,1]
-        # facial-landmarks-35-adas-0001:
-        #   "align_fc3", [1,70], the shape: [1, 70], containing row-vector of 70 floating point values for 35 landmarks'
-        #    normed coordinates in the form (x0, y0, x1, y1, ..., x34, y34).
+        Output layer names in Inference Engine format:
+        landmarks-regression-retail-0009:
+          "95", [1, 10, 1, 1], containing a row-vector of 10 floating point values for five landmarks
+                coordinates in the form (x0, y0, x1, y1, ..., x5, y5).
+                All the coordinates are normalized to be in range [0,1]
+        facial-landmarks-35-adas-0001:
+          "align_fc3", [1,70], the shape: [1, 70], containing row-vector of 70 floating point values for 35 landmarks'
+           normed coordinates in the form (x0, y0, x1, y1, ..., x34, y34).
         """
 
         normed_landmarks = np.zeros(0)
