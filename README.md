@@ -2,7 +2,7 @@
 
 ## What's this
 
-This is test code of object tracking with Tello.
+This is test code of object tracking/detection with Tello.
 
 You can do followings:
 * Video streaming from Tello on your browser.
@@ -10,7 +10,8 @@ You can do followings:
 * Change tracking mode (streamonly, test, tracking).
 * Object Detection(MobileNet-SSD)
 * Face Detection and Face analytics (Age/Gender, Emotion, Head Pose, Facial Landmarks)
-**Note: Object Detection and Face Detectin/analutics require OpenVINO environment**
+**Note: Object Detection and Face Detection/analytics require OpenVINO toolkit**
+
 
 Face detection demo (YouTube Link)
 
@@ -229,12 +230,12 @@ https://software.intel.com/en-us/articles/OpenVINO-Install-Windows
 
 ```sh
 extension/cpu_extension.dll
-extension/IR/MobileNetSSD_FP16/MobileNetSSD_deploy.bin
-extension/IR/MobileNetSSD_FP16/MobileNetSSD_deploy.mapping
-extension/IR/MobileNetSSD_FP16/MobileNetSSD_deploy.xml
-extension/IR/MobileNetSSD_FP32/MobileNetSSD_deploy.bin
-extension/IR/MobileNetSSD_FP32/MobileNetSSD_deploy.mapping
-extension/IR/MobileNetSSD_FP32/MobileNetSSD_deploy.xml
+extension/IR/FP16/MobileNetSSD_deploy.bin
+extension/IR/FP16/MobileNetSSD_deploy.mapping
+extension/IR/FP16/MobileNetSSD_deploy.xml
+extension/IR/FP32/MobileNetSSD_deploy.bin
+extension/IR/FP32/MobileNetSSD_deploy.mapping
+extension/IR/FP32/MobileNetSSD_deploy.xml
 ```
 
 3. Download Face detection models IR files
@@ -244,8 +245,8 @@ cd extension/IR/
 models="face-detection-retail-0004 age-gender-recognition-retail-0013 emotions-recognition-retail-0003 head-pose-estimation-adas-0001 landmarks-regression-retail-0009"
 for model in $models
 do
-wget --no-check-certificate https://download.01.org/openvinotoolkit/2018_R5/open_model_zoo/${model}/FP16/${model}.xml
-wget --no-check-certificate https://download.01.org/openvinotoolkit/2018_R5/open_model_zoo/${model}/FP16/${model}.bin
+wget --no-check-certificate -P FP16 https://download.01.org/openvinotoolkit/2018_R5/open_model_zoo/${model}/FP16/${model}.xml
+wget --no-check-certificate -P FP32 https://download.01.org/openvinotoolkit/2018_R5/open_model_zoo/${model}/FP16/${model}.bin
 done
 ```
 
