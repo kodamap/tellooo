@@ -31,78 +31,64 @@ model_ag_xml = "age-gender-recognition-retail-0013.xml"
 model_em_xml = "emotions-recognition-retail-0003.xml"
 model_hp_xml = "head-pose-estimation-adas-0001.xml"
 # facial-landmarks-35-adas-0001.xml does not work well with MYRIAD device
-#model_lm_xml = "facial-landmarks-35-adas-0001.xml"
+# model_lm_xml = "facial-landmarks-35-adas-0001.xml"
 model_lm_xml = "landmarks-regression-retail-0009.xml"
 
 
 class Detectors(object):
-    def __init__(self, devices, models, cpu_extension, plugin_dir,
+    def __init__(self, devices, cpu_extension, plugin_dir,
                  prob_threshold, prob_threshold_face, is_async_mode):
         self.cpu_extension = cpu_extension
+        self.device_ss, self.device_fc, self.device_ag, self.device_em, self.device_hp, self.device_lm = devices
         self.plugin_dir = plugin_dir
         self.prob_threshold = prob_threshold
         self.prob_threshold_face = prob_threshold_face
         self.is_async_mode = is_async_mode
-        self._load_detectors(devices, models)
+        self._define_models()
+        self._load_detectors()
 
-    def _load_detectors(self, devices, models):
-        device_ss, device_fc, device_ag, device_em, device_hp, device_lm = devices
-        # self.models are used by app.py to display using models
-        self.models = self._define_models(devices, models)
-        model_ss, model_fc, model_ag, model_em, model_hp, model_lm = self.models
-        cpu_extension = self.cpu_extension
-        plugin_dir = self.plugin_dir
-        prob_threshold = self.prob_threshold
-        prob_threshold_face = self.prob_threshold_face
-        is_async_mode = self.is_async_mode
+    def _define_models(self):
+
+        # set devices and models
+        fp_path = FP32 if self.device_ss == "CPU" else FP16
+        self.model_ss = fp_path + model_ss_xml
+        fp_path = FP32 if self.device_fc == "CPU" else FP16
+        self.model_fc = fp_path + model_fc_xml
+        fp_path = FP32 if self.device_ag == "CPU" else FP16
+        self.model_ag = fp_path + model_ag_xml
+        fp_path = FP32 if self.device_em == "CPU" else FP16
+        self.model_em = fp_path + model_em_xml
+        fp_path = FP32 if self.device_hp == "CPU" else FP16
+        self.model_hp = fp_path + model_hp_xml
+        fp_path = FP32 if self.device_lm == "CPU" else FP16
+        self.model_lm = fp_path + model_lm_xml
+
+        self.models = [self.model_ss, self.model_fc, self.model_ag,
+                       self.model_em, self.model_hp, self.model_lm]
+
+    def _load_detectors(self):
 
         # Create MobileNet-SSD detection class instance
         self.ssd_detection = detectors.SSDetection(
-            device_ss, model_ss, cpu_extension, plugin_dir, prob_threshold,
-            is_async_mode)
+            self.device_ss, self.model_ss, self.cpu_extension, self.plugin_dir, self.prob_threshold, self.is_async_mode)
         # Create face_detection class instance
         self.face_detectors = detectors.FaceDetection(
-            device_fc, model_fc, cpu_extension, plugin_dir,
-            prob_threshold_face, is_async_mode)
+            self.device_fc, self.model_fc, self.cpu_extension, self.plugin_dir, self.prob_threshold_face, self.is_async_mode)
         # Create face_analytics class instances
         self.age_gender_detectors = detectors.AgeGenderDetection(
-            device_ag, model_ag, cpu_extension, plugin_dir,
-            prob_threshold_face, is_async_mode)
+            self.device_ag, self.model_ag, self.cpu_extension, self.plugin_dir, self.prob_threshold_face, self.is_async_mode)
         self.emotions_detectors = detectors.EmotionsDetection(
-            device_em, model_em, cpu_extension, plugin_dir,
-            prob_threshold_face, is_async_mode)
+            self.device_em, self.model_em, self.cpu_extension, self.plugin_dir, self.prob_threshold_face, self.is_async_mode)
         self.headpose_detectors = detectors.HeadPoseDetection(
-            device_hp, model_hp, cpu_extension, plugin_dir, prob_threshold,
-            is_async_mode)
+            self.device_hp, self.model_hp, self.cpu_extension, self.plugin_dir, self.prob_threshold, self.is_async_mode)
         self.facial_landmarks_detectors = detectors.FacialLandmarksDetection(
-            device_lm, model_lm, cpu_extension, plugin_dir,
-            prob_threshold_face, is_async_mode)
-
-    def _define_models(self, devices, models):
-        device_ss, device_fc, device_ag, device_em, device_hp, device_lm = devices
-        model_ss, model_fc, model_ag, model_em, model_hp, model_lm = models
-
-        # set devices and models
-        fp_path = FP32 if device_ss == "CPU" else FP16
-        model_ss = fp_path + model_ss_xml if model_ss is None else model_ss
-        fp_path = FP32 if device_fc == "CPU" else FP16
-        model_fc = fp_path + model_fc_xml if model_fc is None else model_fc
-        fp_path = FP32 if device_ag == "CPU" else FP16
-        model_ag = fp_path + model_ag_xml if model_ag is None else model_ag
-        fp_path = FP32 if device_em == "CPU" else FP16
-        model_em = fp_path + model_em_xml if model_em is None else model_em
-        fp_path = FP32 if device_hp == "CPU" else FP16
-        model_hp = fp_path + model_hp_xml if model_hp is None else model_hp
-        fp_path = FP32 if device_lm == "CPU" else FP16
-        model_lm = fp_path + model_lm_xml if model_lm is None else model_lm
-
-        return [model_ss, model_fc, model_ag, model_em, model_hp, model_lm]
+            self.device_lm, self.model_lm, self.cpu_extension, self.plugin_dir, self.prob_threshold_face, self.is_async_mode)
 
 
 class Detections(Detectors):
     def __init__(self, devices, models, cpu_extension, plugin_dir,
                  prob_threshold, prob_threshold_face, is_async_mode):
-        super().__init__(devices, models, cpu_extension, plugin_dir,
+        super().__init__(devices, cpu_extension, plugin_dir,
                          prob_threshold, prob_threshold_face, is_async_mode)
 
         frame = None
@@ -203,8 +189,7 @@ class Detections(Detectors):
         det_time_fc = det_time
 
         face_count = faces.shape[2]
-        det_time_txt = "face_cnt:{} face:{:.2f} ".format(face_count,
-                                                            det_time * 1000)
+        det_time_txt = "face_cnt:{} face:{:.2f} ".format(face_count, det_time * 1000)
 
         # ----------- Start Face Analytics ---------- #
 
@@ -258,8 +243,6 @@ class Detections(Detectors):
             # will be updated with prev face box in async mode
             if is_face_async_mode:
                 next_face_frame = frame[ymin:ymax, xmin:xmax]
-                ##if next_face_frame is None:
-                ##    return frame
                 if prev_box is not None:
                     xmin, ymin, xmax, ymax = prev_box.astype("int")
             else:
