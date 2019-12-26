@@ -50,11 +50,7 @@ https://github.com/ECI-Robotics/opencv_remote_streaming_processing/
 * Chrome / Firefox
 * OpenVINO Toolkit R4/R5 (Required only when object/face detection is enanbled )
 
-<<<<<<< HEAD
 **Note: If you use Ubuntu, [issues#4](https://github.com/kodamap/tellooo/issues/4) maybe help you.**
-=======
-**Note: If you use Ubuntu, [issues#4](https://github.com/kodamap/tellooo/issues/4) may be helps.**
->>>>>>> origin/master
 
 ## Required Packages
 
