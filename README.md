@@ -10,6 +10,7 @@ You can do followings:
 * Change tracking mode (streamonly, test, tracking).
 * Object Detection(MobileNet-SSD)
 * Face Detection and Face analytics (Age/Gender, Emotion, Head Pose, Facial Landmarks)
+
 **Note: Object Detection and Face Detection/analytics require OpenVINO toolkit**
 
 
@@ -40,13 +41,16 @@ http://blog.miguelgrinberg.com/post/video-streaming-with-flask
 https://github.com/ECI-Robotics/opencv_remote_streaming_processing/
 
 
-##  Environment (tested on Windows10)
+##  Environment
 
+* Windows 10
 * Python 3.6.x
 * Flask 0.12.2
 * opencv-python 3.4.3.18
 * Chrome / Firefox
 * OpenVINO Toolkit R4/R5 (Required only when object/face detection is enanbled )
+
+**Note: If you use Ubuntu, [issues#4](https://github.com/kodamap/tellooo/issues/4) maybe help you.**
 
 ## Required Packages
 
@@ -83,8 +87,8 @@ optional arguments:
   -h, --help            show this help message and exit
   -a {camshift,meanshift}, --algorithm {camshift,meanshift}
                         selct object tracking algorithm
-  -t, --test            test mode (without tracking motion)
-  -tr, --tracking       test mode (without tracking motion)
+  -t, --test            test mode (disable tracking motion)
+  -tr, --tracking       tracking mode (enable tracking motion)
   -c {blue,skyblue,red,yellow,green}, --color {blue,skyblue,red,yellow,green}
                         select tracking color in color.ini
   --enable_detection    enable object detection using MobileNet-SSD
