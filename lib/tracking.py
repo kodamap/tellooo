@@ -148,7 +148,7 @@ class Tracking(object):
             cv2.putText(self.track_frame, self.position, (10, 60),
                         cv2.FONT_HERSHEY_SIMPLEX, 0.4, (200, 10, 10), 1)
 
-        # put always video prams in the frame
+        # put video params on the frame
         frame_h, frame_w = self.track_frame.shape[:2]  # shape (h, w, c)
         mode_color = "MODE:{} {}".format(mode[0], self.target_color)
         cv2.putText(self.track_frame,
