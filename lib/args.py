@@ -17,12 +17,12 @@ def build_argparser():
     parser.add_argument(
         '-t',
         '--test',
-        help='test mode (without tracking motion)',
+        help='test mode (disable tracking motion)',
         action='store_true')
     parser.add_argument(
         '-tr',
         '--tracking',
-        help='test mode (without tracking motion)',
+        help='tracking mode (enable tracking motion)',
         action='store_true')
     parser.add_argument(
         '-c',
