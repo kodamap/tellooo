@@ -48,9 +48,12 @@ https://github.com/ECI-Robotics/opencv_remote_streaming_processing/
 * Flask 0.12.2
 * opencv-python 3.4.3.18
 * Chrome / Firefox
-* OpenVINO Toolkit R4/R5 (Required only when object/face detection is enanbled )
+* OpenVINO Toolkit 2019 R4+ (Required only when object/face detection is enanbled )
 
-**Note: If you use Ubuntu, [issues#4](https://github.com/kodamap/tellooo/issues/4) maybe help you.**
+**Note1: If you use Ubuntu, [issues#4](https://github.com/kodamap/tellooo/issues/4) maybe help you.**
+
+**Note2:** "In OpenVINO toolkit 2020.1 build+, CPU extensions (including AVX) have been included into CPU MKL-DNN plugin."
+[libcpu_extension_avx2.so No such file or directory Error](https://software.intel.com/en-us/forums/intel-distribution-of-openvino-toolkit/topic/848825)
 
 ## Required Packages
 
@@ -291,6 +294,10 @@ To test video streaming , use ffmpeg.
 ```sh
 $ ffmpeg -f dshow -i video="Integrated Camera" -preset ultrafast -vcodec libx264 -tune zerolatency -b 900k -f mpegts udp://127.0.0.1:11111
 ```
+
+**Note:** If you can't work streaming with ffmpeg and have an error with OpenCV(4.2.0-openvino) like `MFX: Unsupported extension:`, you should donwload `opencv_videoio_ffmpeg420_64.dll` in `opencv\bin`.
+
+See this forums in details. [ValueError: cannot reshape array](https://software.intel.com/en-us/forums/intel-distribution-of-openvino-toolkit/topic/848893)
 
 ### Video capture does not display
 

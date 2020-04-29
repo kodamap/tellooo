@@ -22,6 +22,7 @@ from time import sleep
 from logging import getLogger, basicConfig, DEBUG, INFO
 from lib.args import build_argparser
 from lib import interactive_detection
+from openvino.inference_engine import get_version
 
 app = Flask(__name__)
 
@@ -300,7 +301,10 @@ if __name__ == '__main__':
             args.model_emotions, args.model_head_pose,
             args.model_facial_landmarks
         ]
-        if "CPU" in devices and args.cpu_extension is None:
+        # openvino.inference_engine version '2.1.37988' is openvino_2020.1.033 build
+        # , which does not need cpu extension. 
+        # https://software.intel.com/en-us/forums/intel-distribution-of-openvino-toolkit/topic/848825
+        if "CPU" in devices and args.cpu_extension is None and (get_version() < '2.1.37988'):
             print(
                 "\nPlease try to specify cpu extensions library path in demo's command line parameters using -l "
                 "or --cpu_extension command line argument")
